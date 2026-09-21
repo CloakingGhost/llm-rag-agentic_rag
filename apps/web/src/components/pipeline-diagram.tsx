@@ -31,14 +31,14 @@ const PIPELINES = [
   {
     name: "Native RAG",
     summary: "규정을 검색해 찾은 내용만으로 답합니다.",
-    trait: "근거는 분명하지만, 검색이 빗나가면 답하지 못합니다.",
-    steps: ["질문", "검색", "리랭킹", "생성", "답변"],
+    trait: "검색 결과를 추리지 않고 그대로 넣는 대조군입니다. 검색이 빗나가면 엉뚱한 조문을 근거로 삼습니다.",
+    steps: ["질문", "검색", "전량 주입", "생성", "답변"],
   },
   {
     name: "Agentic RAG",
     summary: "질문을 분류하고, 검색한 뒤, 스스로 답을 검증합니다.",
-    trait: "관련 없는 질문은 거절하고, 검증을 통과하지 못하면 다시 검색합니다.",
-    steps: ["질문", "라우팅", "검색", "생성", "검증", "답변"],
+    trait: "관련 없는 질문은 거절합니다. 3회를 넘기면 검증 미통과로 표시한 채 답을 내보냅니다.",
+    steps: ["질문", "기억", "라우팅", "검색", "생성", "검증", "답변"],
     loop: true,
   },
 ];
@@ -66,7 +66,7 @@ export function PipelineDiagram() {
             {p.loop ? (
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <RotateCcw className="size-3" />
-                검증에서 기준 미달이면 검색부터 다시 (최대 3회)
+                기준 미달이면 1회차는 재검색, 2회차는 재생성 (최대 3회)
               </p>
             ) : null}
 

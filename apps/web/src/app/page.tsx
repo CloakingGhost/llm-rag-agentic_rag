@@ -53,8 +53,12 @@ export default async function Home() {
               있습니다.
             </p>
             <p>
-              모든 단계에 <code className="rounded bg-muted px-1 py-0.5 text-xs">gpt-4o-mini</code>를 사용합니다.
-              질문 한 건에 대략 $0.001 안팎이 듭니다.
+              모델은 <strong className="text-foreground">GPT-5.6 Luna</strong>(기본) · GPT-5.6 Terra ·
+              GPT-4o 중에서 채팅 화면에서 고를 수 있습니다. 한 요청의 모든 단계가 같은 모델을 씁니다.
+            </p>
+            <p>
+              Luna 기준으로 세 파이프라인을 한 번에 돌리면 질문 한 건에 대략 $0.008입니다. 검색 없이 답하는
+              Vanilla가 가장 싸고, 검증을 반복하는 Agentic이 가장 비쌉니다.
             </p>
           </CardContent>
         </Card>
