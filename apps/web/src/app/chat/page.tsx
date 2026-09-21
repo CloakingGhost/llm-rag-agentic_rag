@@ -121,11 +121,16 @@ export default function ChatPage() {
                 requestIdRef.current = event.requestId;
                 // 같은 대화를 이어 가려면 이 값을 다음 질문에 그대로 실어 보낸다
                 setConversations((prev) => ({ ...prev, [mode]: event.conversationId }));
+                // 갱신 전 ID를 먼저 잡아둔다.
+                // setHistories의 업데이터는 렌더 시점에 실행되므로, 아래에서 activeId를 바꾸면
+                // 업데이터 안에서는 이미 새 값이 보인다. 그러면 비교가 어긋나 아무 요청도 갱신되지 않는다
+                const pendingId = activeId;
+                activeId = event.requestId;
                 // 서버가 매긴 실행 ID로 바꿔 둔다 (취소·로그 추적에 쓰인다)
                 setHistories((prev) => ({
                   ...prev,
                   [mode]: prev[mode].map((req) =>
-                    req.requestId !== activeId
+                    req.requestId !== pendingId
                       ? req
                       : {
                           ...req,
@@ -138,7 +143,6 @@ export default function ChatPage() {
                         },
                   ),
                 }));
-                activeId = event.requestId;
                 break;
               }
               case "run_step":
