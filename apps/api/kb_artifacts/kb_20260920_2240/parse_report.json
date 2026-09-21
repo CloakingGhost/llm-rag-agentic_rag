@@ -1,0 +1,26 @@
+{
+ "build_id": "kb_20260920_2240",
+ "built_at": "2026-09-20T22:47:32+00:00",
+ "source_hashes": {
+  "law": "4a2eff1c12346e17",
+  "standard": "e6d2a95f8f30aef7",
+  "appendix": "d7216f4daf7e6da1"
+ },
+ "tables_total": 157,
+ "tables_rule_ok": 156,
+ "tables_llm_fixed": 0,
+ "tables_whole": 1,
+ "chunk_counts": {
+  "law": 197,
+  "standard": 1457,
+  "total": 1654
+ },
+ "failures": [
+  {
+   "table_id": "별표Ⅱ-p55-0",
+   "title": "모바일콘텐츠",
+   "page": "55",
+   "why": "문자 보존율 0.59; 누락된 숫자 ['3,000']"
+  }
+ ]
+}
