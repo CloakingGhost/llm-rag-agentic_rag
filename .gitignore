@@ -34,3 +34,9 @@ apps/api/mock_store.db
 
 # 그래프 추출 체크포인트 (재개용, 재생성 가능)
 apps/api/kb_artifacts/*/graph_partial.jsonl
+
+# 배포에 영향력이 없는 폴더
+ref
+compare
+deploy
+docs
