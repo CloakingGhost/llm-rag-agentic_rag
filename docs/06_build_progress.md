@@ -83,7 +83,8 @@
 
 ## 남은 것
 
-1. **배포**: Dockerfile → Cloud Run, Neon 연결, Vercel, GitHub Actions
+1. **배포 실행**: 런북은 [07_deployment.md](07_deployment.md)에 있다. 이미지·CI·쿠키 설정은 끝났고,
+   Neon·GCP·Vercel 계정 작업만 남았다
 2. **Alembic 마이그레이션** (지금은 기동 시 `create_all` + 뒤늦게 추가된 열만 `ALTER TABLE`, IMP-17)
 
 ## 검색 품질 (실측)

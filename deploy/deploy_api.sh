@@ -28,7 +28,7 @@ echo "▶ 푸시"
 docker push "${IMAGE}"
 
 echo "▶ 배포"
-# --timeout은 실행 제한(60초)보다 넉넉히 둔다. SSE 응답이 그 안에 끝나야 한다
+# 설정값 근거는 docs/04_system_design.md §4-1-2 (리전·메모리·인스턴스·타임아웃·동시 요청)
 gcloud run deploy "${SERVICE}" \
   --project "${PROJECT_ID}" \
   --region "${REGION}" \
@@ -38,10 +38,10 @@ gcloud run deploy "${SERVICE}" \
   --memory 1Gi \
   --cpu 1 \
   --min-instances 0 \
-  --max-instances 2 \
+  --max-instances 3 \
   --concurrency 20 \
-  --timeout 300 \
-  --set-env-vars "DATABASE_URL=${DATABASE_URL},ALLOWED_ORIGINS=${WEB_ORIGIN},ADMIN_ID=${ADMIN_ID},ADMIN_PW=${ADMIN_PW},COOKIE_SAMESITE=none,COOKIE_SECURE=true,NATIVE_MODE=paper,TOOLS_ENABLED=false"
+  --timeout 120 \
+  --set-env-vars "^##^DATABASE_URL=${DATABASE_URL}##ALLOWED_ORIGINS=${WEB_ORIGIN}##ADMIN_ID=${ADMIN_ID}##ADMIN_PW=${ADMIN_PW}##COOKIE_SAMESITE=none##COOKIE_SECURE=true##NATIVE_MODE=paper##TOOLS_ENABLED=false"
 
 URL="$(gcloud run services describe "${SERVICE}" --project "${PROJECT_ID}" --region "${REGION}" --format='value(status.url)')"
 echo "▶ 배포 완료: ${URL}"
