@@ -18,6 +18,7 @@ function formatMetrics(run: RunState) {
 
 function OutcomeBadge({ run }: { run: RunState }) {
   if (run.outcome === "rejected") return <Badge variant="outline">도메인 밖</Badge>;
+  if (run.outcome === "unverified") return <Badge variant="destructive">검증 미통과</Badge>;
   if (run.outcome === "fallback") return <Badge variant="destructive">폴백됨</Badge>;
   if (run.outcome === "canceled") return <Badge variant="outline">중지됨</Badge>;
   if (run.outcome === "failed") return <Badge variant="destructive">실패</Badge>;

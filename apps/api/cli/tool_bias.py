@@ -82,7 +82,7 @@ def summarize(rows: list[dict], kind: str) -> dict:
         tools_used += len(calls)
         schema_errors += sum(1 for c in calls if c.get("error") in ("schema_error", "invalid_json"))
         not_found += sum(1 for c in calls if c.get("error") == "not_found")
-        fallbacks += 1 if run.get("outcome") == "fallback" else 0
+        fallbacks += 1 if run.get("outcome") in ("fallback", "unverified") else 0
         metrics = run.get("metrics") or {}
         tokens += (metrics.get("tokensIn") or 0) + (metrics.get("tokensOut") or 0)
         latency += (metrics.get("latencyMs") or 0) / 1000

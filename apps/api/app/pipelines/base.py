@@ -17,7 +17,9 @@ from app.config import cost_usd, get_settings
 from app.kb.retriever import RetrievedChunk
 
 Pipeline = Literal["vanilla", "native", "agentic"]
-Outcome = Literal["answered", "rejected", "fallback", "failed", "canceled"]
+# unverified: Critic 3회를 넘겨 검증을 통과하지 못한 채 마지막 답변을 내보낸 경우 (논문 9.2)
+# fallback  : 그 답변을 Native RAG 결과로 대체한 경우 (논문 9.4의 향후 과제. 기본값 아님)
+Outcome = Literal["answered", "rejected", "unverified", "fallback", "failed", "canceled"]
 Emit = Callable[[str, dict[str, Any]], Awaitable[None]]
 
 PROMPT_DIR = Path(__file__).resolve().parents[2] / "config" / "prompts"
@@ -138,7 +140,12 @@ class RunRecord:
                 }
             ]
         if self.fallback_used:
-            payload["fallbackReason"] = "Critic 기준 미달 → Native RAG 결과로 대체"
+            payload["fallbackReason"] = "Critic 기준 미달 → Native RAG 결과로 대체 (논문 9.4 제안)"
+        elif self.outcome == "unverified":
+            payload["fallbackReason"] = (
+                f"Critic 기준을 {self.critic_attempts}회 모두 통과하지 못했습니다. "
+                "논문 9.2절대로 마지막 답변을 그대로 내보냅니다."
+            )
         return payload
 
 

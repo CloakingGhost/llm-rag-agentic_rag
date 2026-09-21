@@ -152,7 +152,12 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
                     )
                     await asyncio.wait_for(coro, timeout=settings.run_timeout_sec)
 
-                if pipeline == "agentic" and record.outcome == "fallback":
+                # 논문 9.4절이 제안한 Native 우회. 기본값(paper)에서는 하지 않는다
+                if (
+                    pipeline == "agentic"
+                    and record.outcome == "unverified"
+                    and settings.critic_exhausted == "native_fallback"
+                ):
                     await _apply_fallback(record, records, native_done, client, kb, payload.question, emit)
 
             except asyncio.CancelledError:
@@ -281,6 +286,7 @@ async def _apply_fallback(record, records, native_done, client, kb, question, em
         await native_done.wait()
         if native.outcome == "answered":
             record.answer = native.answer
+            record.outcome = "fallback"
             record.fallback_used = True
             record.fallback_source_run_id = native.run_id
             return
@@ -288,6 +294,7 @@ async def _apply_fallback(record, records, native_done, client, kb, question, em
     spare = RunRecord(run_id=f"{record.run_id}-fb", pipeline="native", model=record.model)
     await run_native(client, kb, spare, question, emit)
     record.answer = spare.answer
+    record.outcome = "fallback"
     record.fallback_used = True
     record.tokens_in += spare.tokens_in
     record.tokens_out += spare.tokens_out

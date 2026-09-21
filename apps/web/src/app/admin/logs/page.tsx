@@ -23,6 +23,7 @@ const MODE_LABEL: Record<ChatMode, string> = {
 const OUTCOME_LABEL: Record<Outcome, string> = {
   answered: "답변",
   rejected: "거절",
+  unverified: "검증 미통과",
   fallback: "폴백",
   failed: "실패",
   canceled: "중지",
@@ -31,7 +32,7 @@ const OUTCOME_LABEL: Record<Outcome, string> = {
 const PIPELINE_SHORT: Record<Pipeline, string> = { vanilla: "V", native: "R", agentic: "A" };
 
 function outcomeVariant(outcome: Outcome) {
-  if (outcome === "failed" || outcome === "fallback") return "destructive" as const;
+  if (outcome === "failed" || outcome === "fallback" || outcome === "unverified") return "destructive" as const;
   if (outcome === "answered") return "secondary" as const;
   return "outline" as const;
 }

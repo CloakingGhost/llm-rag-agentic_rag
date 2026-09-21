@@ -239,6 +239,7 @@ def render_markdown(rows: list[dict], model: str, started: str) -> str:
             badge = {
                 "answered": "답변",
                 "rejected": "도메인 밖 거절",
+                "unverified": "검증 미통과 (Critic 3회 미달)",
                 "fallback": "폴백 (Critic 미달)",
                 "failed": "실패",
                 "canceled": "중지",

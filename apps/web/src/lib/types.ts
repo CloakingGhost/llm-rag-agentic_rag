@@ -7,6 +7,9 @@ export type ChatMode = "all" | "vanilla" | "rag" | "agentic";
 export type Outcome =
   | "answered"
   | "rejected"
+  // Critic 3회를 넘겨 검증을 통과하지 못한 채 마지막 답변을 낸 경우 (논문 9.2)
+  | "unverified"
+  // 그 답변을 Native RAG 결과로 대체한 경우 (논문 9.4의 향후 과제. 기본 꺼짐)
   | "fallback"
   | "failed"
   | "canceled";

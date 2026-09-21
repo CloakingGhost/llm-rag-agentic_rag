@@ -35,6 +35,7 @@ const NODE_LABEL: Record<string, string> = {
   generate: "생성",
   critic: "검증",
   reject: "거절",
+  unverified: "검증 미통과",
   fallback: "폴백",
 };
 

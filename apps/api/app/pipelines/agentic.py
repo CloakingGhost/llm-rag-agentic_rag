@@ -1,7 +1,8 @@
 """Agentic RAG: LangGraph 순환 그래프 (논문 4.2절 최종 구성).
 
 구조: 분쟁 대상 추출 → 의도 라우팅 → (거절) | (도구 실행) | 검색 → 생성 → Critic 검증
-      검증 미달이면 1회차는 재검색, 2회차는 재생성. 3회를 넘기면 Native RAG로 폴백한다.
+      검증 미달이면 1회차는 재검색, 2회차는 재생성. 3회를 넘기면 논문 9.2절대로 복구 없이
+      마지막 답변을 검증 미통과(unverified) 상태로 내보낸다.
 
 도구 호출(논문 3.5 Lightweight ReAct)과 가상 고객 DB는 **기본으로 꺼져 있다**.
 논문 4.1절이 최종 평가에서 그 모듈을 비활성화했기 때문이다. `TOOLS_ENABLED=true`로 켜면
@@ -59,7 +60,7 @@ class AgenticState(TypedDict, total=False):
     feedback: str
     attempt: int
     critic_count: int
-    action: Annotated[str, "다음 경로: pass | retry_retrieve | retry_generate | fallback"]
+    action: Annotated[str, "다음 경로: pass | retry_retrieve | retry_generate | exhausted"]
 
 
 SCHEMAS = {
@@ -432,7 +433,8 @@ def build_agentic_graph(
             record.outcome = "answered"
             return {"action": "pass", "critic_count": attempt}
         if attempt >= settings.critic_max_attempts:
-            return {"action": "fallback", "feedback": critic.feedback, "critic_count": attempt}
+            # 논문 9.2: 재시도를 넘기면 복구 경로 없이 그대로 끝난다
+            return {"action": "exhausted", "feedback": critic.feedback, "critic_count": attempt}
         # 1회차 실패는 재검색, 2회차 실패는 재생성 (논문 4.2.3)
         return {
             "action": "retry_retrieve" if attempt == 1 else "retry_generate",
@@ -475,7 +477,7 @@ def build_agentic_graph(
     graph.add_conditional_edges(
         "critic",
         lambda s: s.get("action", "pass"),
-        {"pass": END, "retry_retrieve": "retrieve", "retry_generate": "generate", "fallback": END},
+        {"pass": END, "retry_retrieve": "retrieve", "retry_generate": "generate", "exhausted": END},
     )
     return graph.compile(checkpointer=checkpointer)
 
@@ -513,6 +515,8 @@ async def run_agentic(
 
     record.answer = final.get("answer", "")
     if record.outcome is None:
-        record.outcome = "answered" if final.get("action") == "pass" else "fallback"
-        record.fallback_used = record.outcome == "fallback"
+        # 논문 9.2절은 재시도를 넘겼을 때의 복구 경로를 두지 않았다.
+        # 마지막 생성 답변을 검증 미통과(unverified) 상태로 그대로 내보낸다.
+        # Native RAG 우회는 논문 9.4절의 향후 과제이며 CRITIC_EXHAUSTED로 켠다 (호출자가 처리)
+        record.outcome = "answered" if final.get("action") == "pass" else "unverified"
     return record

@@ -114,6 +114,10 @@ class Settings(BaseSettings):
     retrieve_top_k: int = 20
     rerank_top_k: int = 5
     critic_max_attempts: int = 3
+    # Critic 최대 재시도를 넘겼을 때의 처리
+    #   paper           : 논문 그대로. 마지막 생성 답변을 검증 미통과 상태로 내보낸다 (논문 9.2)
+    #   native_fallback : 논문 9.4절이 향후 과제로 제안한 Native RAG 우회를 미리 적용한다
+    critic_exhausted: str = "paper"
 
     # Native RAG 주입 방식
     #   paper      : 논문 부록 4-B 그대로. 검색 결과를 정제 없이 전량 주입한다 (평균 1만 토큰)
