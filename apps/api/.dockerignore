@@ -1,0 +1,20 @@
+# 이미지에 넣지 않는 것
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.env
+.env.*
+
+# 지식베이스는 활성 빌드만 이미지에 넣는다.
+# 중간 빌드까지 보내면 빌드 컨텍스트가 111MB가 되므로 여기서 걸러낸다.
+# 지식베이스를 다시 만들면 아래 빌드 ID와 Dockerfile의 KB_BUILD_ID를 함께 바꾼다
+kb_artifacts/*
+!kb_artifacts/kb_20260920_2240
+kb_artifacts/*/graph_partial.jsonl
+kb_artifacts/*/.tmp/
+
+# 로컬 DB
+local_dev.db
+mock_store.db

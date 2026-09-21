@@ -201,13 +201,25 @@ async def admin_login(payload: LoginRequest, response: Response) -> dict[str, bo
     if not ok:
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 올바르지 않습니다.")
     # 세션 쿠키: 브라우저를 닫으면 만료된다 (04_system_design.md)
-    response.set_cookie(SESSION_COOKIE, _token(), httponly=True, samesite="lax", secure=True)
+    # 프런트(Vercel)와 API(Cloud Run)가 다른 도메인이면 COOKIE_SAMESITE=none이어야 한다
+    response.set_cookie(
+        SESSION_COOKIE,
+        _token(),
+        httponly=True,
+        samesite=settings.cookie_samesite,  # type: ignore[arg-type]
+        secure=settings.cookie_secure,
+    )
     return {"ok": True}
 
 
 @router.post("/admin/logout")
 async def admin_logout(response: Response) -> dict[str, bool]:
-    response.delete_cookie(SESSION_COOKIE)
+    settings = get_settings()
+    response.delete_cookie(
+        SESSION_COOKIE,
+        samesite=settings.cookie_samesite,  # type: ignore[arg-type]
+        secure=settings.cookie_secure,
+    )
     return {"ok": True}
 
 

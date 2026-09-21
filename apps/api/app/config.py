@@ -91,6 +91,10 @@ class Settings(BaseSettings):
 
     admin_id: str = "admin"
     admin_pw: str = "admin"
+    # 관리자 세션 쿠키. 프런트와 API가 다른 도메인이면 "none"이어야 브라우저가 쿠키를 보낸다
+    # (Vercel + Cloud Run 조합). 같은 사이트에서 돌릴 때는 "lax"가 더 안전하다
+    cookie_samesite: str = "lax"
+    cookie_secure: bool = True
 
     max_concurrent_runs: int = 20
     run_timeout_sec: int = 60
@@ -102,6 +106,9 @@ class Settings(BaseSettings):
     # 단가 (USD per 1M tokens). 바뀌면 price_version을 올린다.
     price_version: str = "2026-09"
     price_embedding: float = 0.13
+
+    # 지식베이스 빌드 (비우면 kb_artifacts에서 가장 최근 빌드)
+    kb_build_id: str = ""
 
     # 검색
     retrieve_top_k: int = 20

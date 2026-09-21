@@ -6,7 +6,9 @@ import hashlib
 from pathlib import Path
 
 API_DIR = Path(__file__).resolve().parents[1]
-REPO_DIR = API_DIR.parents[1]
+# 컨테이너에는 저장소 루트가 없다 (이미지 안에서는 apps/api 내용만 /app 에 있다).
+# 빌드 CLI는 로컬에서만 돌리므로 그때만 REF_DIR이 실제로 쓰인다
+REPO_DIR = API_DIR.parents[1] if len(API_DIR.parents) > 1 else API_DIR
 REF_DIR = REPO_DIR / "ref"
 ARTIFACTS_DIR = API_DIR / "kb_artifacts"
 
