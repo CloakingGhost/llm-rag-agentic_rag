@@ -83,7 +83,11 @@ function toRunState(run: LogDetailRun): RunState {
       toolCalls: act?.calls,
       retrievals: retrieval,
       critics: critics.length ? critics : undefined,
-      fallbackReason: run.fallbackUsed ? "Critic 기준 미달 → Native RAG 결과로 대체" : undefined,
+      fallbackReason: run.fallbackUsed
+        ? "Critic 기준 미달 → Native RAG 결과로 대체 (논문 9.4 제안)"
+        : run.outcome === "unverified"
+          ? `Critic 기준을 ${run.criticAttempts}회 모두 통과하지 못했습니다. 논문 9.2절대로 마지막 답변을 그대로 내보냅니다.`
+          : undefined,
     },
   };
 }
