@@ -23,6 +23,11 @@ agentic:
     당신은 쇼핑몰 CS 시스템의 상태 추적 모듈입니다.
     사용자의 질문에서 현재 분쟁 대상을 추출하세요.
     이전 분쟁 대상이 있으면 그것을 기반으로 업데이트하세요.
+    이번 질문에서 새로 드러나지 않은 항목은 null로 두세요. 이전 값이 그대로 유지됩니다.
+    대상이 바뀐 것이 분명할 때만 새 값으로 덮어쓰세요.
+  memory_user: |
+    <previous_dispute_target>{previous}</previous_dispute_target>
+    <question>{question}</question>
 
   router_system: |
     당신은 쇼핑몰 CS 챗봇의 의도 분류기입니다.

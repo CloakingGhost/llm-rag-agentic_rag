@@ -92,6 +92,16 @@ class Settings(BaseSettings):
     rerank_top_k: int = 5
     critic_max_attempts: int = 3
 
+    # Native RAG 주입 방식
+    #   paper      : 논문 부록 4-B 그대로. 검색 결과를 정제 없이 전량 주입한다 (평균 1만 토큰)
+    #   compressed : 리랭킹 상위 5개만 주입한다 (우리가 먼저 만든 방식. 토큰은 1/3)
+    native_mode: str = "paper"
+    native_top_k: int = 20
+
+    # 세션 메모리 (논문 3.4 MemorySaver). 프로세스 메모리에만 두므로 상한이 필요하다
+    session_max: int = 500
+    session_ttl_min: int = 120
+
     @property
     def origins(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]

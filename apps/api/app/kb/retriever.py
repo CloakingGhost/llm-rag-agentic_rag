@@ -199,18 +199,49 @@ async def _rerank(
     return ranked, usage.prompt_tokens, usage.completion_tokens
 
 
+async def vector_retrieve(
+    client: AsyncOpenAI, kb: KnowledgeBase, question: str, top_k: int | None = None
+) -> RetrievalResult:
+    """논문 부록 4-B의 Native RAG: 밀집 검색 결과를 정제 없이 전량 주입한다.
+
+    질의 확장도 리랭킹도 하지 않는다. 논문이 이 대조군의 약점(맥락 혼동, 토큰 낭비)을
+    그대로 드러내려고 만든 구성이므로 보완 장치를 넣지 않는다.
+    """
+    settings = get_settings()
+    top_k = top_k or settings.native_top_k
+
+    embedding_response = await client.embeddings.create(model=settings.embed_model, input=question[:7000])
+    embedding = embedding_response.data[0].embedding
+    chunks = _vector_search(kb, embedding, top_k)
+    for rank, chunk in enumerate(chunks, start=1):
+        chunk.rerank_rank = rank
+        chunk.selected = True  # 전량 주입
+
+    return RetrievalResult(
+        query=question,
+        chunks=chunks,
+        cost_usd=embedding_response.usage.total_tokens * settings.price_embedding / 1_000_000,
+        vector_count=len(chunks),
+    )
+
+
 async def hybrid_search(
     client: AsyncOpenAI,
     kb: KnowledgeBase,
     question: str,
     dispute_type: str | None = None,
     model: str | None = None,
+    product_name: str | None = None,
 ) -> RetrievalResult:
     settings = get_settings()
     model = model or settings.chat_model
-    query = f"{dispute_type} {question}".strip() if dispute_type else question
+    # 세션 메모리가 기억하는 분쟁 대상을 질의에 얹는다.
+    # 후속 턴("그럼 환불은요?")에는 품목이 없어서 이것이 없으면 엉뚱한 표를 찾는다.
+    hints = [h for h in (product_name, dispute_type) if h and h not in question]
+    contextual = f"{' '.join(hints)} {question}".strip() if hints else question
+    query = contextual
     # 별표Ⅰ 매핑으로 품목 묶음 이름을 덧붙인다 (예: 노트북 → 전자제품, 사무용기기)
-    expansions = kb.expand_query(question)
+    expansions = kb.expand_query(contextual)
     if expansions:
         query = f"{query} ({' '.join(expansions)})"
 
@@ -224,12 +255,12 @@ async def hybrid_search(
     by_id = {c.chunk_id: c for c in vector_chunks}
 
     # 품목이 특정되면 그 품목 표 안에서도 검색한다 (같은 임베딩을 재사용하므로 추가 비용 없음)
-    item_titles = kb.matching_titles(question)
+    item_titles = kb.matching_titles(contextual)
     item_chunks = _vector_search(kb, embedding, 8, titles=item_titles) if item_titles else []
     for chunk in item_chunks:
         by_id.setdefault(chunk.chunk_id, chunk)
 
-    entities, e_in, e_out = await extract_entities(client, question, model)
+    entities, e_in, e_out = await extract_entities(client, contextual, model)
     tokens_in += e_in
     tokens_out += e_out
 
@@ -249,7 +280,7 @@ async def hybrid_search(
             )
 
     merged = _rrf(vector_chunks, graph_ids, by_id, [c.chunk_id for c in item_chunks])
-    ranked, r_in, r_out = await _rerank(client, question, merged, settings.rerank_top_k, model)
+    ranked, r_in, r_out = await _rerank(client, contextual, merged, settings.rerank_top_k, model)
     tokens_in += r_in
     tokens_out += r_out
 

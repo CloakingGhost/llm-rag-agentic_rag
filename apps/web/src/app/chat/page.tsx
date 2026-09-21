@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyRound, Loader2, Send, Square } from "lucide-react";
+import { KeyRound, Loader2, MessageSquarePlus, Send, Square } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ModelPicker, useModelChoice } from "@/components/chat/model-picker";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { cancelChat, checkHealth, streamChat } from "@/lib/api";
+import { cancelChat, checkHealth, endConversation, streamChat } from "@/lib/api";
 import { getClientId, useApiKey } from "@/lib/api-key";
 import { EXAMPLE_QUESTIONS } from "@/lib/examples";
 import {
@@ -30,12 +30,20 @@ const MODE_TABS: { value: ChatMode; label: string; hint: string }[] = [
 ];
 
 const emptyHistories: Record<ChatMode, RequestState[]> = { all: [], vanilla: [], rag: [], agentic: [] };
+// 대화 ID는 모드마다 따로 둔다. 탭을 바꾸면 다른 대화로 친다
+const emptyConversations: Record<ChatMode, string | null> = {
+  all: null,
+  vanilla: null,
+  rag: null,
+  agentic: null,
+};
 
 export default function ChatPage() {
   const { apiKey, status, saveKey, openPanel, markInvalid } = useApiKey();
   const { models, model, choose } = useModelChoice();
   const [mode, setMode] = useState<ChatMode>("all");
   const [histories, setHistories] = useState(emptyHistories);
+  const [conversations, setConversations] = useState(emptyConversations);
   const [question, setQuestion] = useState("");
   const [keyDraft, setKeyDraft] = useState("");
   const [running, setRunning] = useState(false);
@@ -105,11 +113,14 @@ export default function ChatPage() {
           clientId: getClientId(),
           apiKey,
           model,
+          conversationId: conversations[mode],
           signal: controller.signal,
           onEvent: (event) => {
             switch (event.type) {
               case "request_created": {
                 requestIdRef.current = event.requestId;
+                // 같은 대화를 이어 가려면 이 값을 다음 질문에 그대로 실어 보낸다
+                setConversations((prev) => ({ ...prev, [mode]: event.conversationId }));
                 // 서버가 매긴 실행 ID로 바꿔 둔다 (취소·로그 추적에 쓰인다)
                 setHistories((prev) => ({
                   ...prev,
@@ -186,8 +197,16 @@ export default function ChatPage() {
         requestIdRef.current = null;
       }
     },
-    [apiKey, markInvalid, mode, model, patchRun, running],
+    [apiKey, conversations, markInvalid, mode, model, patchRun, running],
   );
+
+  /** 새 대화. 서버의 세션 메모리를 버리고 화면도 비운다 */
+  const startNewConversation = useCallback(() => {
+    const current = conversations[mode];
+    if (current) void endConversation(current);
+    setConversations((prev) => ({ ...prev, [mode]: null }));
+    setHistories((prev) => ({ ...prev, [mode]: [] }));
+  }, [conversations, mode]);
 
   const stop = useCallback(() => {
     const requestId = requestIdRef.current;
@@ -213,7 +232,14 @@ export default function ChatPage() {
       </Tabs>
       <div className="-mt-2 flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs text-muted-foreground">{modeHint}</p>
-        <ModelPicker models={models} model={model} onChange={choose} disabled={running} />
+        <div className="flex items-center gap-2">
+          {history.length > 0 ? (
+            <Button variant="ghost" size="sm" onClick={startNewConversation} disabled={running}>
+              <MessageSquarePlus className="size-4" /> 새 대화
+            </Button>
+          ) : null}
+          <ModelPicker models={models} model={model} onChange={choose} disabled={running} />
+        </div>
       </div>
 
       <div className="flex-1 space-y-6">
@@ -221,6 +247,9 @@ export default function ChatPage() {
           <div className="rounded-lg border border-dashed p-6 text-center">
             <p className="text-sm text-muted-foreground">
               소비자 분쟁에 대해 물어보세요. 아래 예시를 눌러도 됩니다.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              같은 대화 안에서는 품목과 분쟁 유형을 기억합니다. 이어서 &ldquo;그럼 환불은요?&rdquo;처럼 물어도 됩니다.
             </p>
             <div className="mt-3 flex flex-wrap justify-center gap-2">
               {EXAMPLE_QUESTIONS.map((q) => (

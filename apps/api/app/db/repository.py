@@ -3,24 +3,67 @@
 from __future__ import annotations
 
 import logging
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.config import get_settings
-from app.db.models import Request, RetrievedChunkRow, Run, Step
+from app.db.models import Conversation, Request, RetrievedChunkRow, Run, Step
 from app.db.session import session_scope
 from app.pipelines.base import RunRecord
 
 log = logging.getLogger(__name__)
 
+def _utcnow() -> datetime:
+    return datetime.now(UTC)
+
+
 CHUNK_TEXT_LIMIT = 2000
 CHUNK_LIMIT = 20
 
 
+async def save_conversation(
+    conversation_id: str,
+    client_id: str = "",
+    *,
+    model: str = "",
+    turn_count: int | None = None,
+    product_name: str | None = None,
+    dispute_type: str | None = None,
+    closed: bool | None = None,
+) -> None:
+    """대화 세션 기록. 분쟁 대상은 화면에 보여 주기 위한 스냅샷이다."""
+    fields: dict[str, Any] = {"id": conversation_id, "last_turn_at": _utcnow()}
+    if client_id:
+        fields["client_id"] = client_id
+    if model:
+        fields["model"] = model
+    if turn_count is not None:
+        fields["turn_count"] = turn_count
+    if product_name is not None:
+        fields["product_name"] = product_name[:120]
+    if dispute_type is not None:
+        fields["dispute_type"] = dispute_type[:60]
+    if closed is not None:
+        fields["closed"] = closed
+    try:
+        async with session_scope() as session:
+            await session.merge(Conversation(**fields))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("대화 기록 실패: %s", exc)
+
+
 async def save_request(
-    request_id: str, mode: str, question: str, client_id: str, build_id: str, status: str = "running"
+    request_id: str,
+    mode: str,
+    question: str,
+    client_id: str,
+    build_id: str,
+    status: str = "running",
+    conversation_id: str | None = None,
+    turn_index: int = 1,
 ) -> None:
     # DB 종류에 기대지 않도록 merge를 쓴다 (운영 Postgres, 로컬 SQLite 모두 동작)
     try:
@@ -33,6 +76,8 @@ async def save_request(
                     client_id=client_id,
                     build_id=build_id,
                     status=status,
+                    conversation_id=conversation_id,
+                    turn_index=turn_index,
                 )
             )
     except Exception as exc:  # noqa: BLE001
@@ -127,6 +172,8 @@ async def list_requests(
                     "question": r.question,
                     "mode": r.mode,
                     "clientId": r.client_id,
+                    "conversationId": r.conversation_id,
+                    "turnIndex": r.turn_index,
                     "buildId": r.build_id,
                     "status": r.status,
                     "outcomes": [
@@ -159,6 +206,8 @@ async def get_request_detail(request_id: str) -> dict[str, Any] | None:
             "question": row.question,
             "mode": row.mode,
             "clientId": row.client_id,
+            "conversationId": row.conversation_id,
+            "turnIndex": row.turn_index,
             "buildId": row.build_id,
             "status": row.status,
             "runs": [

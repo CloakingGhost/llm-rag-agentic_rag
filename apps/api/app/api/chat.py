@@ -1,6 +1,8 @@
 """POST /api/chat (SSE).
 
 - 모드에 따라 1개 또는 3개 파이프라인을 서버가 동시에 실행한다.
+- 대화 ID(conversationId)를 받아 Agentic 실행에 세션 메모리를 붙인다 (논문 3.4).
+  Vanilla·Native는 논문의 대조군 그대로 상태를 갖지 않는다.
 - 끝나는 순서대로 이벤트를 내보낸다.
 - Agentic이 폴백하면 같은 요청에서 돌고 있는 Native 결과를 재사용한다 (추가 비용 없음).
 - 중지는 취소 API와 연결 끊김 둘 다로 받는다.
@@ -21,10 +23,11 @@ from openai import APIStatusError, AsyncOpenAI
 from pydantic import BaseModel, Field
 
 from app.config import DEFAULT_MODEL, MODEL_CATALOG, get_settings
-from app.db.repository import save_request, save_run
+from app.db.repository import save_conversation, save_request, save_run
 from app.kb.store import get_kb
 from app.pipelines.agentic import run_agentic
 from app.pipelines.base import RunRecord
+from app.pipelines.session_memory import get_session_memory
 from app.pipelines.simple import run_native, run_vanilla
 
 router = APIRouter(prefix="/api", tags=["chat"])
@@ -54,6 +57,8 @@ class ChatRequest(BaseModel):
     mode: Literal["all", "vanilla", "rag", "agentic"] = "all"
     question: str = Field(min_length=1, max_length=2000)
     client_id: str = Field(alias="clientId", min_length=1, max_length=64)
+    # 같은 대화의 후속 질문이면 앞선 응답에서 받은 값을 그대로 보낸다. 없으면 새 대화로 연다
+    conversation_id: str | None = Field(default=None, alias="conversationId", max_length=40)
     # 논문 7.1절의 3개 모델 중 선택 (기본 GPT-5.6 Luna)
     model: str = DEFAULT_MODEL
 
@@ -98,6 +103,9 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
             raise HTTPException(status_code=503, detail=f"지식베이스를 쓸 수 없습니다: {kb.reason}")
 
     request_id = f"req_{uuid.uuid4().hex[:12]}"
+    memory = get_session_memory()
+    conversation_id = payload.conversation_id or f"conv_{uuid.uuid4().hex[:12]}"
+    turn = memory.begin_turn(conversation_id)
     cancel = asyncio.Event()
     _running[request_id] = cancel
     _client_running.add(payload.client_id)
@@ -129,7 +137,7 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
                         if pipeline == "vanilla"
                         else run_native(client, kb, record, payload.question, emit)
                         if pipeline == "native"
-                        else run_agentic(client, kb, record, payload.question, emit)
+                        else run_agentic(client, kb, record, payload.question, emit, thread_id=conversation_id)
                     )
                     await asyncio.wait_for(coro, timeout=settings.run_timeout_sec)
 
@@ -179,13 +187,26 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
                     "request_created",
                     {
                         "requestId": request_id,
+                        "conversationId": conversation_id,
+                        "turn": turn,
                         "buildId": kb.build_id,
                         "model": payload.model,
                         "runs": [{"runId": r.run_id, "pipeline": r.pipeline} for r in records.values()],
                     },
                 )
             )
-            await save_request(request_id, payload.mode, payload.question, payload.client_id, kb.build_id)
+            await save_conversation(
+                conversation_id, payload.client_id, model=payload.model, turn_count=turn
+            )
+            await save_request(
+                request_id,
+                payload.mode,
+                payload.question,
+                payload.client_id,
+                kb.build_id,
+                conversation_id=conversation_id,
+                turn_index=turn,
+            )
 
             tasks = [asyncio.create_task(run_one(p)) for p in pipelines]
             watcher = asyncio.create_task(cancel.wait())
@@ -200,8 +221,20 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
                 await asyncio.gather(*tasks, return_exceptions=True)
 
             status = _request_status(records, cancel.is_set())
-            await queue.put(("done", {"requestId": request_id, "status": status}))
-            await save_request(request_id, payload.mode, payload.question, payload.client_id, kb.build_id, status)
+            await queue.put(
+                ("done", {"requestId": request_id, "conversationId": conversation_id, "status": status})
+            )
+            await save_request(
+                request_id,
+                payload.mode,
+                payload.question,
+                payload.client_id,
+                kb.build_id,
+                status,
+                conversation_id=conversation_id,
+                turn_index=turn,
+            )
+            await _save_dispute_snapshot(conversation_id, payload, records, turn)
             await queue.put(None)
 
         task = asyncio.create_task(runner())
@@ -240,13 +273,31 @@ async def _apply_fallback(record, records, native_done, client, kb, question, em
             record.fallback_source_run_id = native.run_id
             return
 
-    spare = RunRecord(run_id=f"{record.run_id}-fb", pipeline="native")
+    spare = RunRecord(run_id=f"{record.run_id}-fb", pipeline="native", model=record.model)
     await run_native(client, kb, spare, question, emit)
     record.answer = spare.answer
     record.fallback_used = True
     record.tokens_in += spare.tokens_in
     record.tokens_out += spare.tokens_out
     record.extra_cost += spare.extra_cost
+
+
+async def _save_dispute_snapshot(
+    conversation_id: str, payload: ChatRequest, records: dict[str, RunRecord], turn: int
+) -> None:
+    """이번 턴에 추적된 분쟁 대상을 대화 기록에 남긴다 (로그 표시용)."""
+    agentic = records.get("agentic")
+    if agentic is None:
+        return
+    output = next((s.output for s in agentic.steps if s.node == "memory"), {})
+    await save_conversation(
+        conversation_id,
+        payload.client_id,
+        model=payload.model,
+        turn_count=turn,
+        product_name=output.get("productName"),
+        dispute_type=output.get("disputeType"),
+    )
 
 
 def _request_status(records: dict[str, RunRecord], canceled: bool) -> str:
@@ -258,6 +309,15 @@ def _request_status(records: dict[str, RunRecord], canceled: bool) -> str:
     if any(o == "failed" for o in outcomes):
         return "partial"
     return "completed"
+
+
+@router.post("/chat/conversation/{conversation_id}/end")
+async def end_conversation(conversation_id: str) -> dict[str, bool]:
+    """대화 종료. 세션 메모리를 버린다 (논문 9.3: 세션이 끝나면 맥락이 초기화된다)."""
+    existed = get_session_memory().end(conversation_id)
+    if existed:
+        await save_conversation(conversation_id, closed=True)
+    return {"closed": True}
 
 
 @router.post("/chat/{request_id}/cancel")

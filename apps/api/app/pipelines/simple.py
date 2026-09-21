@@ -6,7 +6,8 @@ import time
 
 from openai import AsyncOpenAI
 
-from app.kb.retriever import hybrid_search
+from app.config import get_settings
+from app.kb.retriever import hybrid_search, vector_retrieve
 from app.kb.store import KnowledgeBase
 
 from .base import Emit, RunRecord, format_references, load_prompts
@@ -41,9 +42,17 @@ async def run_native(
 ) -> RunRecord:
     prompts = load_prompts()
 
+    paper_mode = get_settings().native_mode == "paper"
+
     started = time.monotonic()
     await emit("run_step", {"runId": record.run_id, "pipeline": "native", "node": "retrieve", "attempt": 1})
-    retrieval = await hybrid_search(client, kb, question, model=record.model)
+    # 논문 부록 4-B는 검색 결과를 정제 없이 전량 주입한다. 리랭킹으로 5개만 고르면
+    # 논문이 보고한 토큰량(평균 10,091)과 비교 조건이 달라진다 (docs/paper_conformance.md 쟁점 3)
+    retrieval = (
+        await vector_retrieve(client, kb, question)
+        if paper_mode
+        else await hybrid_search(client, kb, question, model=record.model)
+    )
     record.chunks = retrieval.chunks
     record.extra_cost += retrieval.cost_usd
     record.add_step(
@@ -55,6 +64,7 @@ async def run_native(
             "query": retrieval.query,
             "vectorCount": retrieval.vector_count,
             "graphCount": retrieval.graph_count,
+            "injection": "all" if paper_mode else "reranked_top_k",
         },
     )
 

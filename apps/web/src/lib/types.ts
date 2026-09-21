@@ -57,7 +57,8 @@ export interface CriticJudgement {
 
 export interface RunTrace {
   route?: { route: "policy_inquiry" | "out_of_domain"; reason: string };
-  disputeTarget?: { productName: string | null; disputeType: string | null };
+  // carriedOver: 이번 질문에 없던 항목을 지난 턴에서 이어받았다는 뜻 (논문 3.4 세션 메모리)
+  disputeTarget?: { productName: string | null; disputeType: string | null; carriedOver?: boolean };
   retrievals?: { attempt: number; query: string; chunks: RetrievedChunk[] }[];
   critics?: CriticJudgement[];
   fallbackReason?: string;

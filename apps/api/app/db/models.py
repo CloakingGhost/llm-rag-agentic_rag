@@ -1,6 +1,6 @@
 """운영 DB 스키마 (02_business_data_analysis.md 2-2).
 
-요청 → 실행 → 단계 → 검색 결과. 로그는 무기한 보관한다.
+대화 → 요청 → 실행 → 단계 → 검색 결과. 로그는 무기한 보관한다.
 사용자 API 키는 어디에도 저장하지 않는다.
 """
 
@@ -20,12 +20,36 @@ def _now() -> datetime:
     return datetime.now(UTC)
 
 
+class Conversation(Base):
+    """대화 세션 (논문 3.4 Stateful Memory Bank).
+
+    여기 적히는 분쟁 대상은 화면·로그에 보여 주기 위한 스냅샷이다.
+    다음 턴의 추론에 실제로 쓰이는 상태는 프로세스 메모리의 `MemorySaver`에 있고,
+    서버가 내려가면 함께 사라진다 (논문 9.3의 '세션 종료 시 초기화').
+    """
+
+    __tablename__ = "conversations"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    client_id: Mapped[str] = mapped_column(String(64), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
+    last_turn_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    turn_count: Mapped[int] = mapped_column(Integer, default=0)
+    product_name: Mapped[str | None] = mapped_column(String(120))
+    dispute_type: Mapped[str | None] = mapped_column(String(60))
+    model: Mapped[str] = mapped_column(String(40), default="")
+    closed: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
 class Request(Base):
     __tablename__ = "requests"
 
     id: Mapped[str] = mapped_column(String(40), primary_key=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
     mode: Mapped[str] = mapped_column(String(16))
+    # 대화 ID와 턴 번호. 같은 대화의 질문은 같은 conversation_id를 갖는다
+    conversation_id: Mapped[str | None] = mapped_column(String(40), index=True)
+    turn_index: Mapped[int] = mapped_column(Integer, default=1)
     question: Mapped[str] = mapped_column(Text)
     client_id: Mapped[str] = mapped_column(String(64), index=True)
     build_id: Mapped[str] = mapped_column(String(40), default="")

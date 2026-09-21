@@ -184,18 +184,24 @@ ref/                 원문 자료
 
 ```jsonc
 // 요청 (헤더: X-OpenAI-Key)
-{ "mode": "all | vanilla | rag | agentic", "question": "...", "clientId": "익명 브라우저 ID" }
+{
+  "mode": "all | vanilla | rag | agentic",
+  "question": "...",
+  "clientId": "익명 브라우저 ID",
+  "model": "gpt-5.6-luna | gpt-5.6-terra | gpt-4o",   // 없으면 기본 모델
+  "conversationId": "conv_... | null"                 // 같은 대화의 후속 질문이면 앞 응답의 값
+}
 ```
 
 응답은 `text/event-stream`입니다. 브라우저는 헤더를 붙여야 하므로 `EventSource` 대신 `fetch` 스트림으로 읽습니다 [기본값].
 
 | 이벤트 | 내용 |
 |---|---|
-| `request_created` | `{ requestId, buildId, runs: [{ runId, pipeline }] }` |
+| `request_created` | `{ requestId, conversationId, turn, buildId, model, runs: [{ runId, pipeline }] }` — `conversationId`는 다음 질문에 그대로 실어 보낸다 |
 | `run_step` | `{ runId, pipeline, node, attempt, elapsedMs }` — 화면은 이 이벤트로 **로딩 여부만** 판단하고 단계 이름은 표시하지 않음 (5차 검수에서 변경). 이벤트 자체는 로그 기록에 필요하므로 유지 |
 | `run_done` | `{ runId, pipeline, outcome, answer, metrics: { latencyMs, tokensIn, tokensOut, costUsd }, trace }` — **검색 근거 원문과 Critic 판정은 여기에 한 번에** [결정] |
 | `run_error` | `{ runId, pipeline, errorType, message }` |
-| `done` | `{ requestId, status }` |
+| `done` | `{ requestId, conversationId, status }` |
 
 `outcome`: `answered` / `rejected` / `fallback` / `failed` / `canceled`
 `errorType`: `invalid_key` / `quota_exceeded` / `timeout` / `kb_unavailable` / `busy` / `unknown`
@@ -205,9 +211,11 @@ ref/                 원문 자료
 | 메서드 | 경로 | 요청 | 응답 |
 |---|---|---|---|
 | POST | `/api/chat/{requestId}/cancel` | `{ clientId }` | `{ canceled: true }`. 연결이 끊겨도 서버가 중지함 [결정] |
+| POST | `/api/chat/conversation/{conversationId}/end` | — | `{ closed: true }`. 세션 메모리를 버린다 (논문 3.4·9.3) |
+| GET | `/api/models` | — | `{ default, models: [{ id, label, note, pricePer1M }] }` |
 | POST | `/api/key/validate` | 헤더 키 | `{ valid, reason? }` — 모델 목록 조회, 비용 없음 |
 | GET | `/api/kb/info` | — | `{ buildId, builtAt, status: "ok\|unavailable", documents: [{ name, effectiveDate }], chunkCount }` |
-| GET | `/api/dashboard?period=all\|7d\|30d` | — | 파이프라인별 요약, 노드별 소요 시간, 경로 분포, 표본 수 |
+| GET | `/api/dashboard?period=all\|7d\|30d&model=...` | — | 파이프라인별·모델별 요약, 노드별 소요 시간, 경로 분포, 표본 수 |
 | POST | `/api/admin/login` | `{ id, pw }` | 세션 쿠키 설정 |
 | POST | `/api/admin/logout` | — | 쿠키 삭제 |
 | GET | `/api/admin/logs` | 필터: `mode, pipeline, outcome, from, to, q, page` | 목록 + 전체 건수 |

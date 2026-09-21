@@ -170,6 +170,8 @@ export type ChatEvent =
   | {
       type: "request_created";
       requestId: string;
+      conversationId: string;
+      turn: number;
       buildId: string;
       model: string;
       runs: { runId: string; pipeline: Pipeline }[];
@@ -177,7 +179,7 @@ export type ChatEvent =
   | { type: "run_step"; runId: string; pipeline: Pipeline; node: string; attempt: number }
   | { type: "run_done"; runId: string; pipeline: Pipeline; outcome: Outcome; answer: string; metrics: RunMetrics; trace: RunTrace }
   | { type: "run_error"; runId: string; pipeline: Pipeline; errorType: string; message: string }
-  | { type: "done"; requestId: string; status: string };
+  | { type: "done"; requestId: string; conversationId: string; status: string };
 
 export async function streamChat(options: {
   mode: ChatMode;
@@ -185,6 +187,8 @@ export async function streamChat(options: {
   clientId: string;
   apiKey: string;
   model: string;
+  /** 같은 대화의 후속 질문이면 앞선 응답에서 받은 값을 넘긴다 (논문 3.4 세션 메모리) */
+  conversationId?: string | null;
   signal: AbortSignal;
   onEvent: (event: ChatEvent) => void;
 }): Promise<void> {
@@ -197,6 +201,7 @@ export async function streamChat(options: {
       question: options.question,
       clientId: options.clientId,
       model: options.model,
+      conversationId: options.conversationId ?? null,
     }),
     signal: options.signal,
   });
@@ -232,6 +237,13 @@ export async function streamChat(options: {
       }
     }
   }
+}
+
+/** 대화 종료. 서버가 세션 메모리를 버린다 (논문 9.3: 세션이 끝나면 맥락이 초기화된다) */
+export function endConversation(conversationId: string) {
+  return fetch(`${API_BASE}/api/chat/conversation/${conversationId}/end`, { method: "POST" }).catch(
+    () => null,
+  );
 }
 
 export function cancelChat(requestId: string, clientId: string) {

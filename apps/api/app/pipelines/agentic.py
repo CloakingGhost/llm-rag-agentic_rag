@@ -2,7 +2,9 @@
 
 구조: 분쟁 대상 추출 → 의도 라우팅 → (거절) | 검색 → 생성 → Critic 검증
       검증 미달이면 1회차는 재검색, 2회차는 재생성. 3회를 넘기면 Native RAG로 폴백한다.
-도구 호출과 가상 고객 DB는 논문 최종 평가에서 제외됐으므로 여기에도 없다.
+도구 호출과 가상 고객 DB는 논문 최종 평가에서 제외됐으므로(논문 4.1) 여기에도 없다.
+
+대화 ID를 주면 `MemorySaver` 체크포인터를 붙여 분쟁 대상을 다음 턴으로 넘긴다 (논문 3.4).
 """
 
 from __future__ import annotations
@@ -21,6 +23,7 @@ from app.kb.retriever import hybrid_search
 from app.kb.store import KnowledgeBase
 
 from .base import Emit, RunRecord, format_references, load_prompts
+from .session_memory import get_session_memory
 
 
 class DisputeTarget(BaseModel):
@@ -112,7 +115,9 @@ def _cached(usage) -> int:
     return getattr(getattr(usage, "prompt_tokens_details", None), "cached_tokens", 0) or 0
 
 
-def build_agentic_graph(client: AsyncOpenAI, kb: KnowledgeBase, record: RunRecord, emit: Emit):
+def build_agentic_graph(
+    client: AsyncOpenAI, kb: KnowledgeBase, record: RunRecord, emit: Emit, checkpointer=None
+):
     settings = get_settings()
     prompts = load_prompts()["agentic"]
 
@@ -122,17 +127,41 @@ def build_agentic_graph(client: AsyncOpenAI, kb: KnowledgeBase, record: RunRecor
     async def memory_node(state: AgenticState) -> AgenticState:
         started = time.monotonic()
         await step_event("memory")
-        payload, usage = await _structured(
-            client, prompts["memory_system"], state["question"], SCHEMAS["dispute"], record.model
+
+        # 체크포인터가 붙어 있으면 지난 턴의 분쟁 대상이 그대로 들어온다
+        prior = state.get("dispute")
+        if isinstance(prior, dict):
+            prior = DisputeTarget(**prior)
+        user = prompts["memory_user"].format(
+            previous=json.dumps(prior.model_dump() if prior else {}, ensure_ascii=False),
+            question=state["question"],
         )
-        dispute = DisputeTarget(**payload)
+        payload, usage = await _structured(
+            client, prompts["memory_system"], user, SCHEMAS["dispute"], record.model
+        )
+        fresh = DisputeTarget(**payload)
+        # 논문 3.4의 '핵심 속성만 갱신': 이번 턴에 안 나온 속성은 지난 값을 지킨다
+        dispute = DisputeTarget(
+            product_name=fresh.product_name or (prior.product_name if prior else None),
+            dispute_type=fresh.dispute_type or (prior.dispute_type if prior else None),
+        )
+        # 이번 질문에 없는데 지난 턴 값이 그대로 남은 항목이 있으면 '이어받음'으로 본다
+        carried = bool(prior) and any(
+            value and value == getattr(prior, field) and value not in state["question"]
+            for field in ("product_name", "dispute_type")
+            if (value := getattr(dispute, field))
+        )
         record.add_step(
             "memory",
             started,
             tokens_in=usage.prompt_tokens,
             tokens_out=usage.completion_tokens,
             cached_in=_cached(usage),
-            output={"productName": dispute.product_name, "disputeType": dispute.dispute_type},
+            output={
+                "productName": dispute.product_name,
+                "disputeType": dispute.dispute_type,
+                "carriedOver": carried,
+            },
         )
         return {"dispute": dispute, "attempt": 0}
 
@@ -171,7 +200,14 @@ def build_agentic_graph(client: AsyncOpenAI, kb: KnowledgeBase, record: RunRecor
             question = f"{question}\n(보완 요청: {state['feedback']})"
 
         dispute = state.get("dispute") or DisputeTarget()
-        retrieval = await hybrid_search(client, kb, question, dispute.dispute_type, model=record.model)
+        retrieval = await hybrid_search(
+            client,
+            kb,
+            question,
+            dispute.dispute_type,
+            model=record.model,
+            product_name=dispute.product_name,
+        )
         record.chunks = retrieval.chunks
         record.extra_cost += retrieval.cost_usd
         record.add_step(
@@ -289,15 +325,36 @@ def build_agentic_graph(client: AsyncOpenAI, kb: KnowledgeBase, record: RunRecor
         lambda s: s.get("action", "pass"),
         {"pass": END, "retry_retrieve": "retrieve", "retry_generate": "generate", "fallback": END},
     )
-    return graph.compile()
+    return graph.compile(checkpointer=checkpointer)
 
 
 async def run_agentic(
-    client: AsyncOpenAI, kb: KnowledgeBase, record: RunRecord, question: str, emit: Emit
+    client: AsyncOpenAI,
+    kb: KnowledgeBase,
+    record: RunRecord,
+    question: str,
+    emit: Emit,
+    thread_id: str | None = None,
 ) -> RunRecord:
-    """Critic이 끝내 통과하지 못하면 호출자가 Native 결과로 폴백한다 (04 문서)."""
-    compiled = build_agentic_graph(client, kb, record, emit)
-    final = await compiled.ainvoke({"question": question})
+    """Critic이 끝내 통과하지 못하면 호출자가 Native 결과로 폴백한다 (04 문서).
+
+    `thread_id`(대화 ID)를 주면 같은 대화의 지난 상태를 이어받는다.
+    """
+    memory = get_session_memory()
+    compiled = build_agentic_graph(
+        client, kb, record, emit, checkpointer=memory.saver if thread_id else None
+    )
+    # 분쟁 대상만 이어받고 나머지 순환 상태는 턴마다 초기화한다
+    turn_state: AgenticState = {
+        "question": question,
+        "answer": "",
+        "feedback": "",
+        "attempt": 0,
+        "critic_count": 0,
+        "action": "",
+    }
+    config = memory.config(thread_id) if thread_id else None
+    final = await compiled.ainvoke(turn_state, config=config)
 
     record.answer = final.get("answer", "")
     if record.outcome is None:

@@ -50,6 +50,11 @@ export function TraceView({ trace, defaultOpen }: { trace: RunTrace; defaultOpen
             {trace.disputeTarget?.productName ? (
               <div className="mt-2">
                 분쟁 대상: {trace.disputeTarget.productName} · {trace.disputeTarget.disputeType}
+                {trace.disputeTarget.carriedOver ? (
+                  <Badge variant="outline" className="ml-2">
+                    이전 턴에서 이어받음
+                  </Badge>
+                ) : null}
               </div>
             ) : null}
           </AccordionContent>
