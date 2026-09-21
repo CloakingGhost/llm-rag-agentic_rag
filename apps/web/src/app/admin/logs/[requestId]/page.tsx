@@ -87,7 +87,11 @@ function toRunState(run: LogDetailRun): RunState {
   };
 }
 
-export default function AdminLogDetailPage({ params }: PageProps<"/admin/logs/[requestId]">) {
+export default function AdminLogDetailPage({
+  params,
+}: {
+  params: Promise<{ requestId: string }>;
+}) {
   const { requestId } = use(params);
   const [detail, setDetail] = useState<LogDetail | null>(null);
   const [missing, setMissing] = useState(false);

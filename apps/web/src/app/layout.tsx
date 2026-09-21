@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import type { ReactNode } from "react";
 import "./globals.css";
 
 import { ApiKeyPanel } from "@/components/api-key-panel";
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
     "Vanilla LLM · Native RAG · Agentic RAG 세 파이프라인을 같은 질문으로 비교해 보는 소비자 분쟁 상담 챗봇",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="ko"
