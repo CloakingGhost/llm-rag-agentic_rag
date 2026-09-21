@@ -27,6 +27,7 @@ export type NodeName =
   | "generate"
   | "critic"
   | "reject"
+  | "act"
   | "fallback";
 
 export interface RunMetrics {
@@ -56,7 +57,9 @@ export interface CriticJudgement {
 }
 
 export interface RunTrace {
-  route?: { route: "policy_inquiry" | "out_of_domain"; reason: string };
+  route?: { route: "policy_inquiry" | "system_action" | "out_of_domain"; reason: string };
+  // 도구를 켰을 때만 있다 (논문 3.5 Lightweight ReAct). 기본은 꺼져 있다
+  toolCalls?: { tool: string; arguments: string; error?: string | null; result: unknown }[];
   // carriedOver: 이번 질문에 없던 항목을 지난 턴에서 이어받았다는 뜻 (논문 3.4 세션 메모리)
   disputeTarget?: { productName: string | null; disputeType: string | null; carriedOver?: boolean };
   retrievals?: { attempt: number; query: string; chunks: RetrievedChunk[] }[];
@@ -103,6 +106,7 @@ export const NODE_LABEL: Record<NodeName, string> = {
   generate: "생성",
   critic: "검증",
   reject: "거절 응답",
+  act: "도구 실행",
   fallback: "폴백",
 };
 

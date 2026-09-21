@@ -70,6 +70,7 @@ class Run(Base):
     fallback_used: Mapped[bool] = mapped_column(Boolean, default=False)
     fallback_source_run_id: Mapped[str | None] = mapped_column(String(48))
     critic_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    tool_calls: Mapped[int] = mapped_column(Integer, default=0)
     no_info_flag: Mapped[bool] = mapped_column(Boolean, default=False)
     error_type: Mapped[str | None] = mapped_column(String(24))
     error_message: Mapped[str | None] = mapped_column(Text)

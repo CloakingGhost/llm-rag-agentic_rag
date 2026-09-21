@@ -49,6 +49,7 @@ class RunRecord:
     route: str | None = None
     fallback_used: bool = False
     critic_attempts: int = 0
+    tool_calls: int = 0
     error_type: str | None = None
     error_message: str | None = None
     steps: list[StepRecord] = field(default_factory=list)
@@ -113,6 +114,8 @@ class RunRecord:
                 payload["disputeTarget"] = step.output
             if step.node == "critic" and step.output:
                 payload.setdefault("critics", []).append({"attempt": step.attempt, **step.output})
+            if step.node == "act" and step.output:
+                payload["toolCalls"] = step.output.get("calls", [])
         if self.chunks:
             payload["retrievals"] = [
                 {

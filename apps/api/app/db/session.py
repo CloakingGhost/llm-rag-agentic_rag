@@ -46,6 +46,7 @@ async def session_scope() -> AsyncIterator[AsyncSession]:
 # 배포 전에 Alembic으로 옮긴다 (docs/improvement_actions.md IMP-17)
 LATE_COLUMNS: dict[str, dict[str, str]] = {
     "requests": {"conversation_id": "VARCHAR(40)", "turn_index": "INTEGER DEFAULT 1"},
+    "runs": {"tool_calls": "INTEGER DEFAULT 0"},
 }
 
 

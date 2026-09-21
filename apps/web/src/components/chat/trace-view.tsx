@@ -27,6 +27,7 @@ function Criterion({ label, ok }: { label: string; ok: boolean }) {
 export function TraceView({ trace, defaultOpen }: { trace: RunTrace; defaultOpen?: boolean }) {
   const items: string[] = [];
   if (trace.route) items.push("route");
+  if (trace.toolCalls?.length) items.push("tools");
   if (trace.retrievals?.length) items.push("retrieval");
   if (trace.critics?.length) items.push("critic");
   if (!items.length) return null;
@@ -42,7 +43,11 @@ export function TraceView({ trace, defaultOpen }: { trace: RunTrace; defaultOpen
           <AccordionTrigger className="py-2 text-xs">
             라우터 판정
             <Badge variant={trace.route.route === "out_of_domain" ? "destructive" : "secondary"}>
-              {trace.route.route === "out_of_domain" ? "도메인 밖" : "정책 문의"}
+              {trace.route.route === "out_of_domain"
+                ? "도메인 밖"
+                : trace.route.route === "system_action"
+                  ? "시스템 액션"
+                  : "정책 문의"}
             </Badge>
           </AccordionTrigger>
           <AccordionContent className="text-xs text-muted-foreground">
@@ -57,6 +62,27 @@ export function TraceView({ trace, defaultOpen }: { trace: RunTrace; defaultOpen
                 ) : null}
               </div>
             ) : null}
+          </AccordionContent>
+        </AccordionItem>
+      ) : null}
+
+      {trace.toolCalls?.length ? (
+        <AccordionItem value="tools">
+          <AccordionTrigger className="py-2 text-xs">
+            도구 호출
+            <Badge variant="secondary">{trace.toolCalls.length}건</Badge>
+          </AccordionTrigger>
+          <AccordionContent className="space-y-2 text-xs text-muted-foreground">
+            {trace.toolCalls.map((call, index) => (
+              <div key={index} className="rounded border p-2">
+                <div className="flex items-center gap-2">
+                  <code className="font-mono">{call.tool}</code>
+                  {call.error ? <Badge variant="destructive">{call.error}</Badge> : null}
+                </div>
+                <div className="mt-1 break-all font-mono text-[11px]">{call.arguments}</div>
+                <div className="mt-1 break-all text-[11px]">{JSON.stringify(call.result)}</div>
+              </div>
+            ))}
           </AccordionContent>
         </AccordionItem>
       ) : null}

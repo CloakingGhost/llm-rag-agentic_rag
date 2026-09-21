@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fetchLogDetail, type LogDetail, type LogDetailRun } from "@/lib/api";
-import { PIPELINE_LABEL, type RunState } from "@/lib/types";
+import { PIPELINE_LABEL, type RunState, type RunTrace } from "@/lib/types";
 
 const NODE_LABEL: Record<string, string> = {
   memory: "분쟁 대상",
@@ -23,6 +23,7 @@ const NODE_LABEL: Record<string, string> = {
   critic: "검증",
   reject: "거절 응답",
   fallback: "폴백",
+  act: "도구 실행",
 };
 
 /** 로그 상세는 챗봇과 같은 카드를 재사용한다. */
@@ -38,10 +39,13 @@ function toRunState(run: LogDetailRun): RunState {
     : undefined;
 
   const router = run.steps.find((s) => s.node === "router")?.output as
-    | { route?: "policy_inquiry" | "out_of_domain"; reason?: string }
+    | { route?: "policy_inquiry" | "system_action" | "out_of_domain"; reason?: string }
+    | undefined;
+  const act = run.steps.find((s) => s.node === "act")?.output as
+    | { calls?: RunTrace["toolCalls"] }
     | undefined;
   const memory = run.steps.find((s) => s.node === "memory")?.output as
-    | { productName?: string | null; disputeType?: string | null }
+    | { productName?: string | null; disputeType?: string | null; carriedOver?: boolean }
     | undefined;
   const critics = run.steps
     .filter((s) => s.node === "critic")
@@ -69,8 +73,13 @@ function toRunState(run: LogDetailRun): RunState {
     trace: {
       route: router?.route ? { route: router.route, reason: router.reason ?? "" } : undefined,
       disputeTarget: memory
-        ? { productName: memory.productName ?? null, disputeType: memory.disputeType ?? null }
+        ? {
+            productName: memory.productName ?? null,
+            disputeType: memory.disputeType ?? null,
+            carriedOver: memory.carriedOver ?? false,
+          }
         : undefined,
+      toolCalls: act?.calls,
       retrievals: retrieval,
       critics: critics.length ? critics : undefined,
       fallbackReason: run.fallbackUsed ? "Critic 기준 미달 → Native RAG 결과로 대체" : undefined,

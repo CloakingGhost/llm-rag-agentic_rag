@@ -14,14 +14,16 @@
 | 3.1 LangChain·LangGraph 기반으로 통합 | `langgraph` 1.2 + `langchain-openai` 1.6 사용. Agentic은 `StateGraph` 순환 그래프 | **일치** (`app/pipelines/agentic.py`) |
 | 3.1 B2C 지연 10~15초 이내 | 실행당 타임아웃 60초. **실측 Luna Agentic 39초, Terra 16.7초** → 논문 기준 초과 | **불일치** (아래 §쟁점 1) |
 | 3.2 의도 라우터 기반 계층적 추론. 단순 질의는 루프를 돌지 않음 | `router_node`가 `policy_inquiry` / `out_of_domain` 분기. 도메인 밖은 즉시 고정 문구 거절 | **일치** |
-| 3.2 Lightweight ReAct (도구 호출) | 논문 4.1절이 최종 평가에서 도구 호출을 **스스로 껐다** → 구현에도 없음 | **범위 밖** (논문 최종 구성과 동일, 아래 §쟁점 4) |
-| 부록 2-B 라우터 3분기 (`policy_inquiry` / `system_action` / `out_of_domain`) | 2분기만 있음. 도구가 없으므로 `system_action` 경로도 없음 | **불일치** — IMP-13 |
+| 3.5 Lightweight ReAct (ToolLLM 계획-실행 + Mock API 스키마, 좁은 도구 목록) | `TOOLS_ENABLED` 뒤에 구현. 도구 5개, Pydantic 인자 검증, 스키마 위반은 실행하지 않고 오류를 돌려 모델이 교정 (`app/tools/registry.py`) | **일치(선택 기능)** |
+| 9.3 가상 SQLite Mock DB (고객·주문) | `config/mock_orders.json` → SQLite. 합성 데이터라 상담 질문과 맥락이 맞지 않는 것까지 같다 | **일치(선택 기능)** |
+| 부록 2-B 라우터 3분기 (`policy_inquiry` / `system_action` / `out_of_domain`) | 도구를 켜면 3분기, 끄면 2분기. 끌 때는 스키마에서 `system_action`을 아예 뺀다 | **일치(선택 기능)** |
+| 4.1 최종 평가에서 도구 모듈 비활성화 | **기본값이 꺼짐.** 논문의 최종 구성과 같다 | **일치** |
+| 부록 2-A 분쟁 대상에 주문번호 포함 | `DisputeTarget.order_id` 추가. 도구를 켰을 때 쓰인다 | **일치** |
 | 3.3 Self-RAG를 Pydantic Structured Output으로 구현 | `CriticResult(feedback, is_grounded, is_relevant, is_complete)` + `response_format: json_schema` | **일치** (`agentic.py` SCHEMAS) |
 | 3.3 기준 미달 시 이전 상태로 되돌림 | 1회차 실패 → 재검색, 2회차 실패 → 재생성, 3회 초과 → Native 폴백 | **일치** |
 | 3.4 Stateful Memory Bank (`DisputeTarget`, MemorySaver) | `DisputeTarget(product_name, dispute_type)` 추출 노드 + **`MemorySaver` 체크포인터**를 대화 ID(thread_id)에 붙였다. 같은 대화에서 분쟁 대상이 다음 턴으로 넘어간다 | **일치** (`app/pipelines/session_memory.py`) |
 | 3.4 "매 턴 핵심 속성만 갱신" | 이번 턴에 안 드러난 항목은 지난 값을 지킨다. 대화 전체를 프롬프트에 붙이지 않는다 | **일치** (`memory_node`) |
 | 9.3 세션 종료 시 맥락 초기화 (장기 기억 없음) | 체크포인트는 프로세스 메모리에만 둔다. 대화를 닫거나 서버가 내려가면 사라진다 | **일치** — 논문의 한계까지 같이 따름 |
-| 3.4 주문번호 추적 | 주문 DB가 범위 밖이라 `order_id` 없음 | **범위 밖** |
 | 3.6 밀집 벡터 + Graph RAG 하이브리드 | ChromaDB(`text-embedding-3-large`) + NetworkX 그래프 | **일치** (`app/kb/retriever.py`) |
 | 3.6 RRF로 병합 후 LLM Re-ranker로 상위 5개 압축 | `_rrf()` → `_rerank()` → `selected = rank <= 5` | **일치** |
 | 3.6 Louvain 커뮤니티 감지 | 빌드 시 `nx.community.louvain_communities` 적용, 군집 601개 | **일치** (`kb_build/graph.py`) |
@@ -61,6 +63,15 @@ BadRequestError: Unsupported value: 'temperature' does not support 0 with this m
 ```
 
 그래서 `sampling_args()`로 모델별 분기를 두었습니다. GPT-4o만 `temperature=0`을 쓰고, GPT-5.6 계열은 기본값으로 돕니다. **같은 질문이라도 Luna·Terra는 실행할 때마다 답이 달라질 수 있습니다.** 논문은 이 점을 언급하지 않았습니다.
+
+**GPT-5.6 계열은 함수 도구를 쓰려면 추론을 꺼야 합니다.**
+
+```text
+BadRequestError: Function tools with reasoning_effort are not supported for gpt-5.6-luna
+in /v1/chat/completions. To use function tools, use /v1/responses or set reasoning_effort to 'none'.
+```
+
+도구 호출 노드에서만 `reasoning_effort='none'`을 붙입니다(`tool_sampling_args()`). 논문이 쓴 GPT-4o에는 없던 제약입니다.
 
 ---
 
@@ -156,7 +167,7 @@ Native는 "로또 번호를 뽑아 주세요"에도 법령 문서 20개를 주�
 
 대조표 원본: [`compare/대조표_gpt-5.6-luna_20260921_0449.md`](../compare/대조표_gpt-5.6-luna_20260921_0449.md)
 
-### 쟁점 4. 도구 호출(Lightweight ReAct)과 가상 고객 DB가 없다
+### 쟁점 4. 도구 호출(Lightweight ReAct)과 가상 고객 DB
 
 논문 3.5절은 ToolLLM의 계획-실행 철학에 Mock API 스키마를 결합한 Lightweight ReAct를 채택했다고 적습니다.
 그런데 4.1절에서 그 모듈을 **최종 평가 전에 스스로 껐습니다**.
@@ -166,8 +177,23 @@ Native는 "로또 번호를 뽑아 주세요"에도 법령 문서 20개를 주�
 > 이에 따라 최종 평가는 외부 도구 호출을 배제하고…" (논문 4.1)
 
 9.2절에도 "일반 법률 질의를 주문 처리 요청으로 오분류해 가상 DB를 조회하고, 내역이 없다며 오답을 반환"이 적혀 있습니다.
-따라서 **도구가 없는 지금 구성이 논문의 최종 평가 구성과 같습니다.** 남은 차이는 부록 2-B의 라우터가 3분기라는 점뿐이고,
-이는 IMP-13으로 뺐습니다. 공개 제품에는 주문 DB가 없으므로 기본은 꺼 둡니다.
+
+**그래서 양쪽을 다 만들었습니다.** 모듈은 논문 서술대로 구현하되 **기본값은 꺼 둡니다**(논문의 최종 구성).
+`TOOLS_ENABLED=true`로 켜면 논문의 초기 구성이 되고, 두 조건을 비교하면 9.2절의 발견을 직접 확인할 수 있습니다.
+
+| 구성 요소 | 논문 근거 | 구현 |
+|---|---|---|
+| 도구 5개 (프로필·주문목록·주문상세·환불상태·환불접수) | 2.3.4, 3.5 | `app/tools/registry.py` |
+| 좁은 인자 스키마 + 위반 시 예외로 자기 교정 | 3.5 | Pydantic 검증. 주문번호는 `ORD-00000000-0000` 형식 강제 |
+| 가상 SQLite Mock DB | 9.3 | `config/mock_orders.json` → SQLite. 상담 데이터와 맥락이 안 맞는 것까지 같다 |
+| 라우터 3분기 | 부록 2-B | 켜면 3분기. 끄면 스키마에서 `system_action`을 아예 뺀다 |
+| 트리 탐색 배제, 반복 상한 | 3.1, 3.5 | `TOOL_MAX_STEPS` 기본 3회 |
+| 생성 노드에 고객 정보·주문 내역 주입 | 부록 2-C | `<account_data>` 블록 |
+
+도구 결과가 비었을 때 어떻게 답할지는 **일부러 지시하지 않았습니다.** 그 처리를 미리 넣으면 논문 9.2절의 실패가
+재현되지 않기 때문입니다. 운영을 염두에 둔 보완은 IMP-18로 빼 두었습니다.
+
+재현 실험: `uv run python -m cli.tool_bias --policy 8 --system 4`
 
 ---
 

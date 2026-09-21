@@ -61,6 +61,9 @@ class ChatRequest(BaseModel):
     conversation_id: str | None = Field(default=None, alias="conversationId", max_length=40)
     # 논문 7.1절의 3개 모델 중 선택 (기본 GPT-5.6 Luna)
     model: str = DEFAULT_MODEL
+    # 도구 호출 사용 여부. 생략하면 서버 기본값(TOOLS_ENABLED, 기본 꺼짐)을 쓴다.
+    # 논문 9.2절의 '도구 편향'을 켜고 끄며 비교하기 위한 실험용 항목이다 (cli/tool_bias.py)
+    tools: bool | None = None
 
     model_config = {"populate_by_name": True, "protected_namespaces": ()}
 
@@ -137,7 +140,15 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
                         if pipeline == "vanilla"
                         else run_native(client, kb, record, payload.question, emit)
                         if pipeline == "native"
-                        else run_agentic(client, kb, record, payload.question, emit, thread_id=conversation_id)
+                        else run_agentic(
+                            client,
+                            kb,
+                            record,
+                            payload.question,
+                            emit,
+                            thread_id=conversation_id,
+                            tools=payload.tools,
+                        )
                     )
                     await asyncio.wait_for(coro, timeout=settings.run_timeout_sec)
 
@@ -189,6 +200,7 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
                         "requestId": request_id,
                         "conversationId": conversation_id,
                         "turn": turn,
+                        "tools": settings.tools_enabled if payload.tools is None else payload.tools,
                         "buildId": kb.build_id,
                         "model": payload.model,
                         "runs": [{"runId": r.run_id, "pipeline": r.pipeline} for r in records.values()],

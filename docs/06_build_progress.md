@@ -1,6 +1,6 @@
 # 6차 구축 진행 상황
 
-- 갱신: 2026-09-21 (세션 메모리·Native 전량 주입 추가)
+- 갱신: 2026-09-21 (도구 호출·가상 주문 DB 추가)
 - 이 문서는 **작업이 끊겼을 때 이어서 하기 위한 메모**다. 세션이 바뀌어도 이 문서만 보면 재개할 수 있다.
 
 ## 끝난 것
@@ -65,11 +65,26 @@
 - 실측(Luna, 노트북 질문): 전량 주입 20개 = 1,731 입력 토큰. 논문의 10,091과 차이가 나는 것은 **청크 크기** 때문이다
   (논문 500자 / 우리는 표의 한 행)
 
+## 도구 호출 (2026-09-21 추가, 기본 꺼짐)
+
+논문 3.5절의 Lightweight ReAct와 9.3절의 가상 주문 DB를 `TOOLS_ENABLED` 뒤에 만들었다.
+**기본값은 꺼짐**이다. 논문 4.1절이 최종 평가에서 이 모듈을 비활성화했기 때문이다.
+
+- 도구 5개: `get_customer_profile` `list_orders` `get_order` `get_refund_status` `create_refund_request`
+- 인자는 Pydantic으로 검증한다. 주문번호는 `ORD-00000000-0000` 형식만 받고, 어기면 실행하지 않고
+  오류를 관찰 결과로 돌려준다 (논문 3.5의 '스스로 교정')
+- 가상 DB는 `config/mock_orders.json`에서 만든다. `mock_store.db`는 지워도 다시 생긴다
+- 켜면 라우터가 3분기가 되고 `system_action`은 검색 없이 도구 결과만으로 답한다
+- 끄면 라우터 스키마에서 `system_action`을 아예 빼서 고를 수 없게 한다
+- **GPT-5.6 계열은 함수 도구에 `reasoning_effort='none'`이 필요하다** (`tool_sampling_args()`)
+
+재현 실험: `uv run python -m cli.tool_bias --policy 8 --system 4`
+같은 질문을 도구 끔/켬으로 돌려 라우팅 분포·도구 호출 수·스키마 오류·폴백률을 비교한다.
+
 ## 남은 것
 
 1. **배포**: Dockerfile → Cloud Run, Neon 연결, Vercel, GitHub Actions
 2. **Alembic 마이그레이션** (지금은 기동 시 `create_all` + 뒤늦게 추가된 열만 `ALTER TABLE`, IMP-17)
-3. **라우터 3분기와 도구 호출** (IMP-13) — 논문 최종 평가도 도구를 껐으므로 지금 구성이 논문과 같다
 
 ## 검색 품질 (실측)
 

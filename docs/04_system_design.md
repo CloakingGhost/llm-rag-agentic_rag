@@ -128,6 +128,10 @@ SSE는 별도 라이브러리 없이 `StreamingResponse`로 직접 만듭니다 
 | api | `MAX_CONCURRENT_RUNS` | 기본 20 |
 | api | `RUN_TIMEOUT_SEC` | 기본 60 |
 | api | `KB_BUILD_ID` | 비우면 매니페스트의 활성 빌드 |
+| api | `NATIVE_MODE` | `paper`(기본, 논문 부록 4-B 전량 주입) 또는 `compressed` |
+| api | `SESSION_MAX` / `SESSION_TTL_MIN` | 세션 메모리 상한. 기본 500개 / 120분 |
+| api | `TOOLS_ENABLED` | 도구 호출·가상 주문 DB. **기본 `false`** (논문 4.1의 최종 구성) |
+| api | `TOOL_MAX_STEPS` | ReAct 루프 상한. 기본 3 |
 | cli (로컬) | `OPENAI_API_KEY` | 빌드 전용 운영자 키 |
 | web | `NEXT_PUBLIC_API_BASE_URL` | 백엔드 주소 |
 
@@ -189,7 +193,8 @@ ref/                 원문 자료
   "question": "...",
   "clientId": "익명 브라우저 ID",
   "model": "gpt-5.6-luna | gpt-5.6-terra | gpt-4o",   // 없으면 기본 모델
-  "conversationId": "conv_... | null"                 // 같은 대화의 후속 질문이면 앞 응답의 값
+  "conversationId": "conv_... | null",                // 같은 대화의 후속 질문이면 앞 응답의 값
+  "tools": null                                       // 도구 사용 여부. 생략하면 서버 기본값(꺼짐)
 }
 ```
 
@@ -197,7 +202,7 @@ ref/                 원문 자료
 
 | 이벤트 | 내용 |
 |---|---|
-| `request_created` | `{ requestId, conversationId, turn, buildId, model, runs: [{ runId, pipeline }] }` — `conversationId`는 다음 질문에 그대로 실어 보낸다 |
+| `request_created` | `{ requestId, conversationId, turn, tools, buildId, model, runs: [{ runId, pipeline }] }` — `conversationId`는 다음 질문에 그대로 실어 보낸다 |
 | `run_step` | `{ runId, pipeline, node, attempt, elapsedMs }` — 화면은 이 이벤트로 **로딩 여부만** 판단하고 단계 이름은 표시하지 않음 (5차 검수에서 변경). 이벤트 자체는 로그 기록에 필요하므로 유지 |
 | `run_done` | `{ runId, pipeline, outcome, answer, metrics: { latencyMs, tokensIn, tokensOut, costUsd }, trace }` — **검색 근거 원문과 Critic 판정은 여기에 한 번에** [결정] |
 | `run_error` | `{ runId, pipeline, errorType, message }` |
