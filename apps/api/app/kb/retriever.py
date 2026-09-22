@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from dataclasses import dataclass, field
 
@@ -247,9 +248,16 @@ async def hybrid_search(
 
     tokens_in = tokens_out = 0
 
-    embedding_response = await client.embeddings.create(model=settings.embed_model, input=query[:7000])
+    # 임베딩과 엔티티 추출은 서로 결과에 기대지 않는다. 순차로 기다리면 두 호출 시간이
+    # 그대로 더해지므로 동시에 보낸다 (IMP-21). Luna·Terra처럼 느린 모델일수록 이득이 크다.
+    embedding_response, (entities, e_in, e_out) = await asyncio.gather(
+        client.embeddings.create(model=settings.embed_model, input=query[:7000]),
+        extract_entities(client, contextual, model),
+    )
     embed_tokens = embedding_response.usage.total_tokens
     embedding = embedding_response.data[0].embedding
+    tokens_in += e_in
+    tokens_out += e_out
 
     vector_chunks = _vector_search(kb, embedding, settings.retrieve_top_k)
     by_id = {c.chunk_id: c for c in vector_chunks}
@@ -259,10 +267,6 @@ async def hybrid_search(
     item_chunks = _vector_search(kb, embedding, 8, titles=item_titles) if item_titles else []
     for chunk in item_chunks:
         by_id.setdefault(chunk.chunk_id, chunk)
-
-    entities, e_in, e_out = await extract_entities(client, contextual, model)
-    tokens_in += e_in
-    tokens_out += e_out
 
     graph_ids = _graph_search(kb, entities, hops=2, limit=10) if kb.graph.number_of_nodes() else []
     missing = [cid for cid in graph_ids if cid not in by_id]
