@@ -36,8 +36,8 @@ apps/api/mock_store.db
 apps/api/kb_artifacts/*/graph_partial.jsonl
 
 # 배포에 영향력이 없는 폴더
-ref
-compare
-deploy
-docs
+ref/
+compare/
+deploy/
+docs/
 agentic_ai_test/
