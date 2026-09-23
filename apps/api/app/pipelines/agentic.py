@@ -136,11 +136,14 @@ def _format_account(calls: list[dict]) -> str:
 async def _structured(
     client: AsyncOpenAI, system: str, user: str, schema: dict, model: str
 ) -> tuple[dict, Any]:
+    """메모리·라우터·Critic이 쓰는 판정용 호출. 깊은 사고가 필요 없는 분류·추출 작업이라
+    `effort="none"`을 준다. 실측상 GPT-5.6 계열은 이 값이 없으면 짧은 판정에도 기본값(가장
+    높은 추론 강도로 보임)이 켜져 호출 하나당 약 2배 느려진다."""
     response = await client.chat.completions.create(
         model=model,
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
         response_format={"type": "json_schema", "json_schema": schema},
-        **sampling_args(model),
+        **sampling_args(model, effort="none"),
     )
     return json.loads(response.choices[0].message.content or "{}"), response.usage
 
@@ -376,12 +379,16 @@ def build_agentic_graph(
             question=state["question"],
         )
         system = prompts["generate_system_tools"] if use_tools else prompts["generate_system"]
+        # effort는 건드리지 않는다 — 실제 사용자 답변을 쓰는 자리라 추론 강도를 낮추면
+        # 품질에 직접 영향을 준다. sampling_args()만 빠져 있던 것을 바로잡는다(4o의 temperature=0
+        # 이 여태 적용 안 되고 있었다)
         response = await client.chat.completions.create(
             model=record.model,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
             ],
+            **sampling_args(record.model),
         )
         usage = response.usage
         record.add_step(

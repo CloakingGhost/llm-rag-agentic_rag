@@ -78,7 +78,7 @@ async def extract_entities(client: AsyncOpenAI, question: str, model: str) -> tu
             {"role": "user", "content": question},
         ],
         response_format={"type": "json_schema", "json_schema": ENTITY_SCHEMA},
-        **sampling_args(model),
+        **sampling_args(model, effort="none"),  # 짧은 개념 추출, 깊은 사고 불필요
     )
     usage = response.usage
     payload = json.loads(response.choices[0].message.content or "{}")
@@ -185,7 +185,7 @@ async def _rerank(
             {"role": "user", "content": json.dumps({"question": question, "documents": listing}, ensure_ascii=False)},
         ],
         response_format={"type": "json_schema", "json_schema": RERANK_SCHEMA},
-        **sampling_args(model),
+        **sampling_args(model, effort="none"),  # 순위 재정렬, 깊은 사고 불필요
     )
     usage = response.usage
     order = json.loads(response.choices[0].message.content or "{}").get("ranking", [])

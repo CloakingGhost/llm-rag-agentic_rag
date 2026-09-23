@@ -20,7 +20,8 @@ class ModelSpec:
     note: str
     # GPT-5.6 계열은 temperature를 기본값(1)만 허용한다
     supports_temperature: bool = True
-    # GPT-5.6 계열은 chat.completions에서 함수 도구를 쓰려면 reasoning_effort='none'이어야 한다
+    # GPT-5.6 계열은 `reasoning_effort`를 받는다. 이름은 도구 호출 때 필요해서 붙였지만,
+    # 지금은 분류·추출 같은 판정성 호출에도 "none"을 줘서 지연을 줄이는 데 쓰인다 (sampling_args 참고)
     tools_need_reasoning_none: bool = False
 
 
@@ -62,12 +63,22 @@ def get_model(model_id: str | None) -> ModelSpec:
     return MODEL_CATALOG.get(model_id or DEFAULT_MODEL, MODEL_CATALOG[DEFAULT_MODEL])
 
 
-def sampling_args(model_id: str | None) -> dict:
+def sampling_args(model_id: str | None, effort: str | None = None) -> dict:
     """모델이 받아 주는 샘플링 인자만 돌려준다.
 
     재현성을 위해 temperature=0을 쓰고 싶지만 GPT-5.6 계열은 기본값만 허용한다.
+
+    `effort`: GPT-5.6 계열에 `reasoning_effort`를 실어 보낸다. 실측 결과 이 값을 안 주면
+    단순 분류·추출처럼 짧은 작업에도 기본값(가장 높은 추론 강도로 보임)이 켜져 호출 하나당
+    약 2배 느려진다("none": 1.9초 vs 미설정: 4.0초, 같은 엔티티 추출 호출 기준).
+    라우터·메모리·Critic·엔티티추출·리랭킹처럼 깊은 사고가 필요 없는 판정 작업에는
+    `effort="none"`을 넘긴다. 최종 답변을 쓰는 generate 노드는 건드리지 않는다 — 답변 품질에
+    직접 영향을 주는 자리라 판단을 미룬다.
     """
-    return {"temperature": 0} if get_model(model_id).supports_temperature else {}
+    args = {"temperature": 0} if get_model(model_id).supports_temperature else {}
+    if effort and get_model(model_id).tools_need_reasoning_none:
+        args["reasoning_effort"] = effort
+    return args
 
 
 def tool_sampling_args(model_id: str | None) -> dict:
@@ -76,10 +87,7 @@ def tool_sampling_args(model_id: str | None) -> dict:
     GPT-5.6 계열은 `chat.completions`에서 함수 도구를 쓰려면 추론을 꺼야 한다.
         Function tools with reasoning_effort are not supported ... set reasoning_effort to 'none'
     """
-    args = sampling_args(model_id)
-    if get_model(model_id).tools_need_reasoning_none:
-        args["reasoning_effort"] = "none"
-    return args
+    return sampling_args(model_id, effort="none")
 
 
 class Settings(BaseSettings):
