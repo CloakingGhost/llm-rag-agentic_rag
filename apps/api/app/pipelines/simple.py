@@ -37,9 +37,7 @@ async def run_vanilla(client: AsyncOpenAI, record: RunRecord, question: str, emi
     return record
 
 
-async def run_native(
-    client: AsyncOpenAI, kb: KnowledgeBase, record: RunRecord, question: str, emit: Emit
-) -> RunRecord:
+async def run_native(client: AsyncOpenAI, kb: KnowledgeBase, record: RunRecord, question: str, emit: Emit) -> RunRecord:
     prompts = load_prompts()
 
     paper_mode = get_settings().native_mode == "paper"
@@ -66,6 +64,7 @@ async def run_native(
             "graphCount": retrieval.graph_count,
             "injection": "all" if paper_mode else "reranked_top_k",
         },
+        priced=False,
     )
 
     started = time.monotonic()

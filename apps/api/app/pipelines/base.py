@@ -61,6 +61,11 @@ class RunRecord:
     tokens_out: int = 0
     cached_in: int = 0
     extra_cost: float = 0.0
+    # record.model 단가로 계산해도 되는 토큰만 센다. retrieve 단계는 리랭킹이 고정 모델
+    # (gpt-4o-mini)을 쓰고 그 비용을 extra_cost에 이미 담아 오므로 여기서 빠진다 — 안 빼면
+    # 리랭킹 토큰이 record.model 단가로 한 번, extra_cost로 한 번 더 이중 청구된다
+    _priced_tokens_in: int = 0
+    _priced_tokens_out: int = 0
 
     @property
     def latency_ms(self) -> int:
@@ -68,7 +73,7 @@ class RunRecord:
 
     @property
     def cost_usd(self) -> float:
-        return cost_usd(self.tokens_in, self.tokens_out, self.cached_in, self.model) + self.extra_cost
+        return cost_usd(self._priced_tokens_in, self._priced_tokens_out, self.cached_in, self.model) + self.extra_cost
 
     def add_step(
         self,
@@ -80,7 +85,11 @@ class RunRecord:
         tokens_out: int = 0,
         cached_in: int = 0,
         output: dict[str, Any] | None = None,
+        priced: bool = True,
     ) -> StepRecord:
+        """`priced=False`는 이 단계의 비용을 이미 `extra_cost`로 따로 더했다는 뜻이다
+        (retrieve 단계: hybrid_search가 엔티티추출·리랭킹을 각자의 모델 단가로 계산해 온다).
+        `tokensIn`/`tokensOut` 화면 표시에는 그래도 포함시킨다 — 실제로 쓴 토큰이니까."""
         step = StepRecord(
             seq=len(self.steps) + 1,
             node=node,
@@ -95,6 +104,9 @@ class RunRecord:
         self.tokens_in += tokens_in
         self.tokens_out += tokens_out
         self.cached_in += cached_in
+        if priced:
+            self._priced_tokens_in += tokens_in
+            self._priced_tokens_out += tokens_out
         return step
 
     def metrics(self) -> dict[str, Any]:
@@ -122,9 +134,7 @@ class RunRecord:
             payload["retrievals"] = [
                 {
                     "attempt": 1,
-                    "query": next(
-                        (s.output.get("query", "") for s in self.steps if s.node == "retrieve"), ""
-                    ),
+                    "query": next((s.output.get("query", "") for s in self.steps if s.node == "retrieve"), ""),
                     "chunks": [
                         {
                             "chunkId": c.chunk_id,

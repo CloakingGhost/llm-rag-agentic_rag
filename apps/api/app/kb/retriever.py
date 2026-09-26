@@ -165,11 +165,13 @@ def _rrf(
 
 
 async def _rerank(
-    client: AsyncOpenAI, question: str, candidates: list[RetrievedChunk], top_k: int, model: str
-) -> tuple[list[RetrievedChunk], int, int]:
-    listing = [
-        {"id": c.chunk_id, "path": c.path, "text": c.text[:400]} for c in candidates[: min(len(candidates), 20)]
-    ]
+    client: AsyncOpenAI, question: str, candidates: list[RetrievedChunk], top_k: int
+) -> tuple[list[RetrievedChunk], int, int, str]:
+    """후보 문서 순서만 매기는 판단이다. 사용자가 고른 생성 모델과 무관하게
+    `settings.rerank_model`(기본 gpt-4o-mini)로 고정한다 — 순위 재정렬에는 무거운 추론이
+    필요 없고, Terra처럼 비싼 모델을 고르면 리랭킹 비용까지 같이 뛰는 걸 막는다."""
+    model = get_settings().rerank_model
+    listing = [{"id": c.chunk_id, "path": c.path, "text": c.text[:400]} for c in candidates[: min(len(candidates), 20)]]
     response = await client.chat.completions.create(
         model=model,
         messages=[
@@ -197,7 +199,7 @@ async def _rerank(
     for rank, chunk in enumerate(ranked, start=1):
         chunk.rerank_rank = rank
         chunk.selected = rank <= top_k
-    return ranked, usage.prompt_tokens, usage.completion_tokens
+    return ranked, usage.prompt_tokens, usage.completion_tokens, model
 
 
 async def vector_retrieve(
@@ -272,9 +274,7 @@ async def hybrid_search(
     missing = [cid for cid in graph_ids if cid not in by_id]
     if missing:
         extra = kb.collection.get(ids=missing, include=["documents", "metadatas"])  # type: ignore[union-attr]
-        for chunk_id, document, metadata in zip(
-            extra["ids"], extra["documents"], extra["metadatas"], strict=True
-        ):
+        for chunk_id, document, metadata in zip(extra["ids"], extra["documents"], extra["metadatas"], strict=True):
             by_id[chunk_id] = RetrievedChunk(
                 chunk_id=chunk_id,
                 path=str(metadata.get("path", "")),
@@ -284,12 +284,16 @@ async def hybrid_search(
             )
 
     merged = _rrf(vector_chunks, graph_ids, by_id, [c.chunk_id for c in item_chunks])
-    ranked, r_in, r_out = await _rerank(client, contextual, merged, settings.rerank_top_k, model)
+    ranked, r_in, r_out, rerank_model = await _rerank(client, contextual, merged, settings.rerank_top_k)
+
+    # 리랭킹이 고정 모델(기본 gpt-4o-mini)을 쓰므로, 그 몫은 따로 그 모델 단가로 계산한다.
+    # 나머지(엔티티 추출)는 사용자가 고른 생성 모델 단가를 그대로 쓴다.
+    cost = cost_usd(e_in, e_out, model_id=model)
+    cost += cost_usd(r_in, r_out, model_id=rerank_model)
+    cost += embed_tokens * settings.price_embedding / 1_000_000
+
     tokens_in += r_in
     tokens_out += r_out
-
-    cost = cost_usd(tokens_in, tokens_out, model_id=model)
-    cost += embed_tokens * settings.price_embedding / 1_000_000
 
     return RetrievalResult(
         query=query,

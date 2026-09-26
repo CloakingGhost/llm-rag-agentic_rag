@@ -58,8 +58,23 @@ MODEL_CATALOG: dict[str, ModelSpec] = {
 
 DEFAULT_MODEL = "gpt-5.6-luna"
 
+# 사용자가 고르는 목록(MODEL_CATALOG)과 별개로, 파이프라인 내부에서만 쓰는 모델이다.
+# /api/models에 노출하지 않는다 — 사용자가 Luna를 선택해도 리랭킹 판단만은 이 모델이 맡는다.
+INTERNAL_MODEL_CATALOG: dict[str, ModelSpec] = {
+    "gpt-4o-mini": ModelSpec(
+        id="gpt-4o-mini",
+        label="GPT-4o mini (내부 전용)",
+        input=0.15,
+        cached_input=0.075,
+        output=0.60,
+        note="리랭킹 전용. 후보 문서 순서를 매기는 판단에는 무거운 추론이 필요 없어 고정했다",
+    ),
+}
+
 
 def get_model(model_id: str | None) -> ModelSpec:
+    if model_id in INTERNAL_MODEL_CATALOG:
+        return INTERNAL_MODEL_CATALOG[model_id]
     return MODEL_CATALOG.get(model_id or DEFAULT_MODEL, MODEL_CATALOG[DEFAULT_MODEL])
 
 
@@ -121,6 +136,10 @@ class Settings(BaseSettings):
     # 검색
     retrieve_top_k: int = 20
     rerank_top_k: int = 5
+    # 리랭킹 판단은 사용자가 고른 모델(Luna 등)과 무관하게 이 모델로 고정한다.
+    # 후보 20여 개를 늘어놓고 순서만 매기는 작업이라 무거운 추론이 필요 없고,
+    # 사용자가 Terra처럼 비싼 모델을 고르면 리랭킹 비용까지 같이 커지는 걸 막는다
+    rerank_model: str = "gpt-4o-mini"
     critic_max_attempts: int = 3
     # Critic 최대 재시도를 넘겼을 때의 처리
     #   paper           : 논문 그대로. 마지막 생성 답변을 검증 미통과 상태로 내보낸다 (논문 9.2)

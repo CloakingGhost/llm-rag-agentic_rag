@@ -133,9 +133,7 @@ def _format_account(calls: list[dict]) -> str:
     return chr(10).join(lines)
 
 
-async def _structured(
-    client: AsyncOpenAI, system: str, user: str, schema: dict, model: str
-) -> tuple[dict, Any]:
+async def _structured(client: AsyncOpenAI, system: str, user: str, schema: dict, model: str) -> tuple[dict, Any]:
     """메모리·라우터·Critic이 쓰는 판정용 호출. 깊은 사고가 필요 없는 분류·추출 작업이라
     `effort="none"`을 준다. 실측상 GPT-5.6 계열은 이 값이 없으면 짧은 판정에도 기본값(가장
     높은 추론 강도로 보임)이 켜져 호출 하나당 약 2배 느려진다."""
@@ -179,9 +177,7 @@ def build_agentic_graph(
             previous=json.dumps(prior.model_dump() if prior else {}, ensure_ascii=False),
             question=state["question"],
         )
-        payload, usage = await _structured(
-            client, prompts["memory_system"], user, SCHEMAS["dispute"], record.model
-        )
+        payload, usage = await _structured(client, prompts["memory_system"], user, SCHEMAS["dispute"], record.model)
         fresh = DisputeTarget(**payload)
         # 논문 3.4의 '핵심 속성만 갱신': 이번 턴에 안 나온 속성은 지난 값을 지킨다
         dispute = DisputeTarget(
@@ -357,6 +353,7 @@ def build_agentic_graph(
                 "vectorCount": retrieval.vector_count,
                 "graphCount": retrieval.graph_count,
             },
+            priced=False,
         )
         return {"attempt": attempt}
 
@@ -367,9 +364,7 @@ def build_agentic_graph(
         await step_event("generate", attempt)
 
         dispute = state.get("dispute") or DisputeTarget()
-        feedback_block = (
-            f"<critic_feedback>{state['feedback']}</critic_feedback>" if state.get("feedback") else ""
-        )
+        feedback_block = f"<critic_feedback>{state['feedback']}</critic_feedback>" if state.get("feedback") else ""
         account_block = state.get("account", "") if use_tools else ""
         user = prompts["generate_user"].format(
             dispute_target=json.dumps(dispute.model_dump(), ensure_ascii=False),
