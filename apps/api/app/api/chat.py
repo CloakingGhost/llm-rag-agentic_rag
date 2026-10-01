@@ -25,6 +25,7 @@ from pydantic import BaseModel, Field
 from app.config import DEFAULT_MODEL, MODEL_CATALOG, get_settings
 from app.db.repository import save_conversation, save_request, save_run
 from app.kb.store import get_kb
+from app.metrics import pipeline_latency_seconds, pipeline_runs_total, semaphore_in_use
 from app.pipelines.agentic import run_agentic
 from app.pipelines.base import RunRecord
 from app.pipelines.session_memory import get_session_memory
@@ -51,6 +52,16 @@ def _sem() -> asyncio.Semaphore:
     if _semaphore is None:
         _semaphore = asyncio.Semaphore(get_settings().max_concurrent_runs)
     return _semaphore
+
+
+@contextlib.asynccontextmanager
+async def _tracked_sem():
+    async with _sem():
+        semaphore_in_use.inc()
+        try:
+            yield
+        finally:
+            semaphore_in_use.dec()
 
 
 class ChatRequest(BaseModel):
@@ -132,7 +143,7 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
         async def run_one(pipeline: str) -> None:
             record = records[pipeline]
             try:
-                async with _sem():
+                async with _tracked_sem():
                     if cancel.is_set():
                         raise asyncio.CancelledError
                     coro = (
@@ -180,6 +191,10 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
             finally:
                 if pipeline == "native":
                     native_done.set()
+                pipeline_runs_total.labels(
+                    pipeline=pipeline, outcome=record.outcome or "unknown", model=payload.model
+                ).inc()
+                pipeline_latency_seconds.labels(pipeline=pipeline).observe(record.latency_ms / 1000)
                 if record.outcome != "failed":
                     record.no_info_flag = any(p in record.answer for p in NO_INFO_PATTERNS)
                     await queue.put(
@@ -212,9 +227,7 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
                     },
                 )
             )
-            await save_conversation(
-                conversation_id, payload.client_id, model=payload.model, turn_count=turn
-            )
+            await save_conversation(conversation_id, payload.client_id, model=payload.model, turn_count=turn)
             await save_request(
                 request_id,
                 payload.mode,
@@ -238,9 +251,7 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
                 await asyncio.gather(*tasks, return_exceptions=True)
 
             status = _request_status(records, cancel.is_set())
-            await queue.put(
-                ("done", {"requestId": request_id, "conversationId": conversation_id, "status": status})
-            )
+            await queue.put(("done", {"requestId": request_id, "conversationId": conversation_id, "status": status}))
             await save_request(
                 request_id,
                 payload.mode,

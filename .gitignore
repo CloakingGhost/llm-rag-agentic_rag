@@ -41,3 +41,7 @@ compare/
 deploy/
 docs/
 agentic_ai_test/
+
+
+# 부하테스트
+## 필요시 추가 작성

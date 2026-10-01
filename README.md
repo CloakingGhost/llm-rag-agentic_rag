@@ -242,6 +242,22 @@ cd apps/api && uv run kb build
 | `TOOLS_ENABLED` | `false` | 도구 호출·가상 주문 DB |
 | `SESSION_MAX` / `SESSION_TTL_MIN` | 500 / 120 | 세션 메모리 상한 |
 
+### 모니터링 (로컬)
+
+Postgres 외에 Prometheus·Grafana도 docker-compose로 띄운다. API는 컨테이너 밖(호스트)에서 돌므로 Prometheus가 `host.docker.internal:8100`으로 스크레이프한다 (`observability/prometheus/prometheus.yml`).
+
+```bash
+cp .env.example .env   # GRAFANA_ADMIN_PASSWORD 채우기
+docker compose up -d
+uv run --directory apps/api uvicorn app.main:app --port 8100
+```
+
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3300 (admin / `.env`의 `GRAFANA_ADMIN_PASSWORD`) — `CDQ API 개요` 대시보드가 자동으로 올라와 있다
+- API 자체 지표: http://localhost:8100/metrics
+
+계획 전체는 [`docs/10_observability_load_test_plan.md`](docs/10_observability_load_test_plan.md) 참고.
+
 ---
 
 ## 9. 구조 요약

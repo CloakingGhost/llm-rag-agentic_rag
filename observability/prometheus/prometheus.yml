@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # API는 docker-compose 밖, 호스트에서 uvicorn으로 뜬다 (README.md 로컬 실행 방법)
+  - job_name: cdq-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["host.docker.internal:8100"]

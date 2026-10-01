@@ -16,5 +16,36 @@ services:
       timeout: 3s
       retries: 10
 
+  # API는 docker-compose 밖, 호스트에서 `uv run uvicorn ... --port 8100`으로 띄운다
+  # (README.md). 그래서 Prometheus는 컨테이너 안에서 호스트를 가리켜야 스크레이프된다
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    container_name: cdq-prometheus
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - cdq_prom_data:/prometheus
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Linux Docker Desktop 호환용. Windows/Mac은 기본 제공
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: cdq-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      # 기본값 방치 금지(IMP-10과 같은 문제 반복 안 함). 루트 .env에서 설정한다
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD를 .env에 설정하세요 (.env.example 참고)}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - cdq_grafana_data:/var/lib/grafana
+    ports:
+      - "3300:3000"
+    depends_on:
+      - prometheus
+
 volumes:
   cdq_pgdata:
+  cdq_prom_data:
+  cdq_grafana_data:
