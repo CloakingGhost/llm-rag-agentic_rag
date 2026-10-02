@@ -83,9 +83,10 @@ def sampling_args(model_id: str | None, effort: str | None = None) -> dict:
 
     재현성을 위해 temperature=0을 쓰고 싶지만 GPT-5.6 계열은 기본값만 허용한다.
 
-    `effort`: GPT-5.6 계열에 `reasoning_effort`를 실어 보낸다. 실측 결과 이 값을 안 주면
-    단순 분류·추출처럼 짧은 작업에도 기본값(가장 높은 추론 강도로 보임)이 켜져 호출 하나당
-    약 2배 느려진다("none": 1.9초 vs 미설정: 4.0초, 같은 엔티티 추출 호출 기준).
+    `effort`: GPT-5.6 계열에 `reasoning_effort`를 실어 보낸다. 생략하면 공식 문서·실측 모두
+    기본값이 "medium"으로 확인된다(docs/06_build_progress.md 2026-10-02) — 단순 분류·추출처럼
+    짧은 작업에도 이 기본값이 켜져 호출 하나당 약 2배 느려진다("none": 1.9초 vs 미설정(medium):
+    4.0초, 같은 엔티티 추출 호출 기준).
     라우터·메모리·Critic·엔티티추출·리랭킹처럼 깊은 사고가 필요 없는 판정 작업에는
     `effort="none"`을 넘긴다. 최종 답변을 쓰는 generate 노드는 건드리지 않는다 — 답변 품질에
     직접 영향을 주는 자리라 판단을 미룬다.

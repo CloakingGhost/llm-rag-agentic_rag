@@ -44,6 +44,10 @@ target-version = "py313"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.per-file-ignores]
+# 테스트 케이스 원문(한글 문장)이라 줄바꿈하면 가독성·정확성이 떨어진다
+"eval/**" = ["E501"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 

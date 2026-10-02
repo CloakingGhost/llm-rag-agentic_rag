@@ -135,8 +135,9 @@ def _format_account(calls: list[dict]) -> str:
 
 async def _structured(client: AsyncOpenAI, system: str, user: str, schema: dict, model: str) -> tuple[dict, Any]:
     """메모리·라우터·Critic이 쓰는 판정용 호출. 깊은 사고가 필요 없는 분류·추출 작업이라
-    `effort="none"`을 준다. 실측상 GPT-5.6 계열은 이 값이 없으면 짧은 판정에도 기본값(가장
-    높은 추론 강도로 보임)이 켜져 호출 하나당 약 2배 느려진다."""
+    `effort="none"`을 준다. GPT-5.6 계열은 이 값이 없으면 기본값 "medium"이 켜져(공식 문서·
+    실측 확인, docs/06_build_progress.md 2026-10-02) 짧은 판정에도 호출 하나당 약 2배 느려진다.
+    Critic 판정 품질 비교에서도 `none`이 `medium`(생략)·`low`보다 정확하고 안정적이었다."""
     response = await client.chat.completions.create(
         model=model,
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],

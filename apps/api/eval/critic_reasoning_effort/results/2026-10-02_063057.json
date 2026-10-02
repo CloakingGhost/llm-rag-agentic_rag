@@ -1,0 +1,1684 @@
+{
+  "run_started_utc": "2026-10-02T06:28:11.738948+00:00",
+  "model": "gpt-5.6-luna",
+  "repeats": 3,
+  "efforts": [
+    "omitted",
+    "none",
+    "low"
+  ],
+  "cases": [
+    {
+      "name": "1_paraphrase_ok",
+      "label": "정상 패러프레이즈",
+      "question": "어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?",
+      "references": "[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.",
+      "answer": "구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.",
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      }
+    },
+    {
+      "name": "2_subtle_hallucination",
+      "label": "숫자 하나를 지어냄",
+      "question": "온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?",
+      "references": "[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.",
+      "answer": "전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.",
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      }
+    },
+    {
+      "name": "3_off_topic_fabricated",
+      "label": "문서와 무관한 내용을 지어냄",
+      "question": "매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.",
+      "references": "[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.",
+      "answer": "가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.",
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      }
+    },
+    {
+      "name": "4_vague_missing_steps",
+      "label": "구체적 절차 누락",
+      "question": "택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?",
+      "references": "[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.",
+      "answer": "상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.",
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      }
+    },
+    {
+      "name": "5_fully_compliant",
+      "label": "전부 통과 sanity",
+      "question": "무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?",
+      "references": "[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.",
+      "answer": "무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.",
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      }
+    },
+    {
+      "name": "6_retrieval_mismatch",
+      "label": "검색 자체가 질문과 무관",
+      "question": "환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?",
+      "references": "[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.",
+      "answer": "반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.",
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      }
+    }
+  ],
+  "summary": {
+    "omitted": {
+      "field_accuracy": {
+        "is_grounded": 0.7777777777777778,
+        "is_relevant": 0.9444444444444444,
+        "is_complete": 0.7222222222222222
+      },
+      "all_correct_rate": 0.6111111111111112,
+      "avg_latency_sec": 3.68,
+      "avg_reasoning_tokens": 120.2
+    },
+    "none": {
+      "field_accuracy": {
+        "is_grounded": 0.9444444444444444,
+        "is_relevant": 1.0,
+        "is_complete": 0.8333333333333334
+      },
+      "all_correct_rate": 0.7777777777777778,
+      "avg_latency_sec": 2.39,
+      "avg_reasoning_tokens": 0.0
+    },
+    "low": {
+      "field_accuracy": {
+        "is_grounded": 0.8888888888888888,
+        "is_relevant": 0.9444444444444444,
+        "is_complete": 0.8333333333333334
+      },
+      "all_correct_rate": 0.7222222222222222,
+      "avg_latency_sec": 3.16,
+      "avg_reasoning_tokens": 52.8
+    }
+  },
+  "rows": [
+    {
+      "case": "1_paraphrase_ok",
+      "case_label": "정상 패러프레이즈",
+      "effort": "omitted",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.\n</retrieved_documents>\n<answer>구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 구입 후 7일 이내 하자 발견 시 교환 또는 환불이 가능하다는 참조 문서의 내용을 정확히 반영했으며, 판매처에 하자를 알리고 신청하라는 실행 방법도 제시해 질문에 적절히 답했습니다. 다만 노이즈가 실제 하자인지 확인하는 방법이나 판매처에 문의할 때 준비할 사항 등은 포함되지 않았지만, 이는 제공된 참조 문서에 없는 내용입니다. 제시된 범위에서는 구체적인 해결 절차가 포함되어 있어 충분합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 5.459,
+      "reasoning_tokens": 164
+    },
+    {
+      "case": "1_paraphrase_ok",
+      "case_label": "정상 패러프레이즈",
+      "effort": "omitted",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.\n</retrieved_documents>\n<answer>구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 ‘구입 후 7일 이내 하자 발생 시 교환 또는 환불 가능’하다는 참조 문서의 내용을 정확히 반영하고 있으며, 어제 구입했다는 사용자 상황에도 적절합니다. 또한 판매처에 하자를 알리고 교환·환불을 신청하라는 실행 방법을 제시해 질문에 답하고 있습니다. 다만 노이즈의 원인을 확인하기 위한 기본 점검(연결 상태, 다른 기기에서 테스트 등)이나 구매 증빙·하자 증거 준비에 대한 안내는 없지만, 제공된 참조 문서 범위 내에서는 핵심적인 해결 방안이 포함되어 있습니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 4.082,
+      "reasoning_tokens": 149
+    },
+    {
+      "case": "1_paraphrase_ok",
+      "case_label": "정상 패러프레이즈",
+      "effort": "omitted",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.\n</retrieved_documents>\n<answer>구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 구입 후 7일 이내 하자에 대해 교환 또는 환불이 가능하다는 핵심 내용을 참조 문서에 근거해 정확히 전달하고 있어 질문과 관련성이 높습니다. 또한 판매처에 하자를 알리고 교환·환불을 신청하라는 실행 방안도 제시했습니다. 다만 ‘판매처에 연락하라’는 절차 자체는 참조 문서에 명시되어 있지 않아, 모든 주장이 retrieved_documents에 직접 근거한다고 보기는 어렵습니다. 또 사용자가 ‘어제’ 구입했다고 했으므로 7일 이내에 해당한다는 점을 명시적으로 연결하고, 구매 증빙이나 노이즈 상태를 준비하라는 안내가 없어 실행 측면에서 다소 부족합니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 6.155,
+      "reasoning_tokens": 332
+    },
+    {
+      "case": "1_paraphrase_ok",
+      "case_label": "정상 패러프레이즈",
+      "effort": "none",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.\n</retrieved_documents>\n<answer>구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 참조 문서의 ‘구입 후 7일 이내 하자 발생 시 교환 또는 환불 가능’이라는 내용에 직접 근거하고 있어 grounded합니다. 또한 어제 구입한 이어폰의 노이즈 문제에 대해 판매처에 연락해 교환·환불을 요청하라는 방향을 제시하므로 질문과 관련성이 높습니다. 다만 노이즈가 실제 하자인지 확인하기 위한 기본 점검(다른 기기·앱에서 테스트, 연결 상태 확인 등)이나 구매 증빙 및 하자 상태를 준비하라는 구체적 실행 방안은 부족합니다. 그래도 주어진 문서 범위 내에서는 판매처에 하자를 알리고 교환 또는 환불을 신청하라는 해결 절차가 포함되어 있어 완전성은 충족한다고 판단합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 3.165,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "1_paraphrase_ok",
+      "case_label": "정상 패러프레이즈",
+      "effort": "none",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.\n</retrieved_documents>\n<answer>구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 제공된 문서의 ‘구입 후 7일 이내 하자 발견 시 교환 또는 환불 가능’이라는 내용에 직접 근거하며, 어제 구입한 이어폰의 노이즈 문제에 적절히 대응합니다. 또한 판매처에 하자를 알리고 교환·환불을 신청하라는 실행 방안도 포함되어 있습니다. 다만 노이즈가 실제 제품 하자인지 확인하기 위한 점검 절차나 구매 증빙 준비 등은 문서에 근거하지 않아 평가 대상 답변에 추가되지 않았으며, 현재 답변 범위에서는 중대한 부족점이 없습니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.789,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "1_paraphrase_ok",
+      "case_label": "정상 패러프레이즈",
+      "effort": "none",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.\n</retrieved_documents>\n<answer>구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 제공된 문서의 핵심 내용인 ‘구입 후 7일 이내 발견된 하자는 교환 또는 환불 가능’을 정확히 반영하고 있으며, 판매처에 연락해 신청하라는 실행 방안도 제시했습니다. 따라서 질문의 상황(어제 구매한 노이즈 발생 이어폰)에 직접적으로 관련되고, 기본적인 해결 절차를 포함합니다. 다만 노이즈 원인 확인이나 증빙 준비 등 추가 조치는 문서에 근거가 없어 반드시 포함할 필요는 없습니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.003,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "1_paraphrase_ok",
+      "case_label": "정상 패러프레이즈",
+      "effort": "low",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.\n</retrieved_documents>\n<answer>구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 구입 후 7일 이내 하자에 대해 교환 또는 환불이 가능하다는 참조 문서의 내용에 근거하며, 어제 구입했다는 상황에도 정확히 적용됩니다. 판매처에 연락해 하자 내용을 알리고 교환·환불을 신청하라는 구체적인 실행 방법도 제시해 사용자 질문에 적절히 답했습니다. 다만 노이즈 원인 확인을 위한 점검 방법이나 신청 시 필요한 증빙 안내는 없지만, 제공된 문서 범위 내에서 요구되는 해결 방안은 포함되어 있습니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 3.565,
+      "reasoning_tokens": 66
+    },
+    {
+      "case": "1_paraphrase_ok",
+      "case_label": "정상 패러프레이즈",
+      "effort": "low",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.\n</retrieved_documents>\n<answer>구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 제공된 문서의 핵심 내용인 ‘구입 후 7일 이내 하자 발견 시 교환 또는 환불 가능’을 정확히 반영하고 있으며, 판매처에 연락해 하자 내용을 알리고 교환·환불을 신청하라는 실행 방법도 제시했습니다. 따라서 질문에 적절하고 근거에도 부합합니다. 다만 노이즈가 일시적인 연결·설정 문제인지 확인하는 방법이나 구매 증빙 및 하자 확인 자료를 준비하라는 안내는 없지만, 제공된 문서 범위 내에서 요구되는 해결 방안은 포함되어 있습니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 3.078,
+      "reasoning_tokens": 58
+    },
+    {
+      "case": "1_paraphrase_ok",
+      "case_label": "정상 패러프레이즈",
+      "effort": "low",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>어제 산 이어폰에서 노이즈가 나는데 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.91)\n전자제품 구입 후 7일 이내 발견된 하자는 제품 교환 또는 환불을 받을 수 있다.\n</retrieved_documents>\n<answer>구입 후 7일 이내에 하자를 발견하셨다면 소비자분쟁해결기준에 따라 제품 교환이나 환불을 요청하실 수 있습니다. 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 구입 후 7일 이내 하자 발견 시 교환 또는 환불이 가능하다는 참조 문서의 내용을 정확히 반영하고 있으며, 어제 구매했다는 상황에도 적용됩니다. 또한 판매처에 연락해 하자 내용을 알리고 교환 또는 환불을 신청하라는 구체적인 실행 방법을 제시해 질문에도 적절히 답했습니다. 다만 노이즈 원인 확인이나 증상 기록 등 추가적인 점검 방법은 포함하지 않았지만, 제공된 참조 문서의 범위와 사용자의 요청을 고려하면 핵심 해결 방안은 충분합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 3.184,
+      "reasoning_tokens": 85
+    },
+    {
+      "case": "2_subtle_hallucination",
+      "case_label": "숫자 하나를 지어냄",
+      "effort": "omitted",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.\n</retrieved_documents>\n<answer>전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 질문의 핵심인 반품 가능 기간을 직접 언급하고 있어 관련성은 있으나, 기간을 ‘상품 수령일로부터 14일 이내’라고 안내한 점이 참조 문서의 ‘7일 이내’와 명백히 불일치합니다. 따라서 핵심 정보가 잘못되었습니다. 또한 ‘택은 떼지 말고 보관하세요’라는 조언은 제공된 문서에 근거가 없습니다. 상품 훼손 시 철회가 제한될 수 있다는 내용은 근거가 있지만, 정확한 기한과 함께 반품 신청 등 구체적인 실행 안내가 부족해 사용자의 문제를 충분히 해결하지 못합니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 3.128,
+      "reasoning_tokens": 81
+    },
+    {
+      "case": "2_subtle_hallucination",
+      "case_label": "숫자 하나를 지어냄",
+      "effort": "omitted",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.\n</retrieved_documents>\n<answer>전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 상품 수령일로부터 14일 이내라고 했지만, 참조 문서에는 전자상거래법상 수령일로부터 7일 이내라고 명시되어 있어 핵심 기한이 잘못되었습니다. 따라서 참조 문서에 근거하지 않은 주장이 포함되어 is_grounded가 아닙니다. 반품 가능 기간과 상품 훼손 시 제한될 수 있다는 점을 언급해 질문과의 관련성은 있으나, 잘못된 기간을 안내해 사용자의 판단에 적절히 답하지 못했습니다. 또한 정확한 반품 신청 기한과 최소한의 실행 방법을 제시해야 하는데, 기간이 틀렸고 반품 신청 절차도 구체적이지 않아 문제를 해결하기에 불충분합니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 3.724,
+      "reasoning_tokens": 100
+    },
+    {
+      "case": "2_subtle_hallucination",
+      "case_label": "숫자 하나를 지어냄",
+      "effort": "omitted",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.\n</retrieved_documents>\n<answer>전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 사용자의 반품 가능 기간을 직접 답하려 했다는 점에서 질문과 관련성은 있으나, 참조 문서에는 상품 수령일로부터 7일 이내라고 되어 있는데 답변은 14일 이내라고 하여 핵심 사실을 잘못 제시했습니다. 또한 ‘택은 떼지 말고 보관하세요’라는 안내는 제공된 문서에 근거가 없습니다. 상품 훼손 시 청약철회가 제한될 수 있다는 내용은 문서에 근거하지만, 잘못된 기간 안내 때문에 사용자의 문제를 정확히 해결하지 못했으며, 반품 신청을 언제 어떻게 해야 하는지에 대한 구체적 실행 안내도 부족합니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 3.144,
+      "reasoning_tokens": 83
+    },
+    {
+      "case": "2_subtle_hallucination",
+      "case_label": "숫자 하나를 지어냄",
+      "effort": "none",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.\n</retrieved_documents>\n<answer>전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 온라인 구매 의류의 반품 가능 기간을 직접 안내하고 있어 질문과 관련됩니다. 그러나 참조 문서에는 수령일로부터 7일 이내라고 되어 있는데 답변은 14일이라고 하여 핵심 기간이 근거와 불일치합니다. 또한 ‘택은 떼지 말고 보관하세요’는 일반적으로 유용할 수 있지만 제공된 문서에 명시되지 않은 추가 주장입니다. 따라서 기간을 7일로 바로잡고, 상품 훼손 등 소비자 책임 사유가 있으면 제한될 수 있다는 점을 근거에 맞게 안내해야 합니다. 구체적인 실행 방안으로 반품 신청 시점을 제시하지 않아 완전성도 부족합니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 2.591,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "2_subtle_hallucination",
+      "case_label": "숫자 하나를 지어냄",
+      "effort": "none",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.\n</retrieved_documents>\n<answer>전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 온라인 구매 의류의 반품 가능 기한과 훼손 시 제한 가능성을 다루어 질문에 직접 답하려 했습니다. 그러나 참조 문서에는 청약철회 기간이 상품 수령일로부터 7일 이내라고 되어 있는데, 답변은 근거 없이 14일이라고 잘못 제시했습니다. 또한 '택은 떼지 말고 보관하세요'라는 조언은 참조 문서에 명시되어 있지 않습니다. 따라서 핵심 기한이 부정확하고, 반품 신청·배송 등 구체적인 실행 방안도 충분하지 않습니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 2.267,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "2_subtle_hallucination",
+      "case_label": "숫자 하나를 지어냄",
+      "effort": "none",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.\n</retrieved_documents>\n<answer>전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 온라인 구매 의류의 반품 가능 기간과 훼손 시 제한 가능성을 언급해 질문의 취지에는 대체로 부합합니다. 그러나 제공된 자료는 수령일로부터 7일 이내라고 명시하는데, 답변은 근거 없이 14일이라고 하여 핵심 사실이 자료와 불일치합니다. 또한 ‘택은 떼지 말고 보관하세요’라는 조언도 제공된 자료에 직접 근거하지 않습니다. 사용자가 실행할 수 있도록 수령일 기준 7일 이내 판매자에게 반품 의사를 전달하라는 구체적 안내가 빠져 있어 완전하지 않습니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 2.483,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "2_subtle_hallucination",
+      "case_label": "숫자 하나를 지어냄",
+      "effort": "low",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.\n</retrieved_documents>\n<answer>전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 반품 가능 기간을 상품 수령일로부터 14일이라고 안내했지만, 참조 문서에는 전자상거래법상 수령일로부터 7일 이내라고 되어 있어 핵심 내용이 근거와 불일치합니다. 따라서 is_grounded는 부적합합니다. 상품 훼손 시 반품이 제한될 수 있다는 내용은 근거에 부합하지만, ‘택은 떼지 말고 보관하라’는 구체적 조언은 제공된 문서에 명시되어 있지 않습니다. 사용자의 반품 가능 시점을 직접 답하려 했으므로 질문과의 관련성은 있으나, 기간을 잘못 안내해 적절한 답변이라고 보기 어렵습니다. 또한 반품 신청 방법이나 판매자 문의 등 실행 절차가 충분히 제시되지 않았으므로 구체적 문제 해결 방안도 부족합니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 3.815,
+      "reasoning_tokens": 61
+    },
+    {
+      "case": "2_subtle_hallucination",
+      "case_label": "숫자 하나를 지어냄",
+      "effort": "low",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.\n</retrieved_documents>\n<answer>전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 반품 가능 기간을 묻는 질문에 직접 답하고, 상품 훼손 시 제한될 수 있다는 점과 택 보관 조언을 제시해 관련성은 있습니다. 그러나 참조 문서에는 상품 수령일로부터 7일 이내라고 되어 있는데 답변은 14일 이내라고 잘못 제시했습니다. 따라서 핵심 법정 기한이 근거와 불일치하며, 이 오류로 인해 사용자가 실제 반품 기한을 놓칠 수 있습니다. 또한 ‘택은 떼지 말고 보관’하라는 조언은 참조 문서에 직접 근거하지 않지만 일반적인 실행 조언으로 볼 수 있습니다. 핵심 기한을 7일 이내로 바로잡아야 하므로 완전성도 충족하지 못합니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 4.454,
+      "reasoning_tokens": 46
+    },
+    {
+      "case": "2_subtle_hallucination",
+      "case_label": "숫자 하나를 지어냄",
+      "effort": "low",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>온라인으로 산 옷을 입어봤는데 안 맞아서 반품하고 싶어요. 언제까지 가능한가요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.88)\n전자상거래법상 청약철회는 상품 수령일로부터 7일 이내에 가능하다. 단, 소비자의 책임 있는 사유로 상품이 훼손된 경우 철회가 제한될 수 있다.\n</retrieved_documents>\n<answer>전자상거래법에 따라 상품 수령일로부터 14일 이내에 청약철회가 가능합니다. 다만 상품에 손상이 있는 경우 반품이 제한될 수 있으니 택은 떼지 말고 보관하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 반품 가능 기간을 상품 수령일로부터 14일이라고 안내했지만, 제공된 근거 문서는 전자상거래법상 7일 이내라고 명시하므로 핵심 정보가 근거와 불일치합니다. 또한 ‘택은 떼지 말고 보관하세요’라는 조언은 제공된 문서에 직접적인 근거가 없습니다. 사용자의 반품 가능 시점을 직접 답하려는 점에서는 관련성이 있지만, 잘못된 기간을 안내해 정확한 해결책이 되지 못하며, 수령일 기준 7일 이내라는 정확한 안내가 필요합니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 3.064,
+      "reasoning_tokens": 59
+    },
+    {
+      "case": "3_off_topic_fabricated",
+      "case_label": "문서와 무관한 내용을 지어냄",
+      "effort": "omitted",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.\n</retrieved_documents>\n<answer>가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 사용자의 정기구독 자동결제 및 해지 후 추가 결제 문제와 무관하게 가전제품의 무상 A/S에 대해 설명하고 있습니다. 검색 문서에는 구독 해지 후 이미 결제된 기간의 서비스 유지, 원칙적 환불 불가, 미제공 기간의 일할 환불만 근거로 제시되어 있으며, 가전제품의 1년 무상 A/S나 서비스센터 방문 접수에 관한 근거는 없습니다. 따라서 문서에 근거하지 않은 주장을 포함하고, 질문에 적절히 답하지 못했으며, 환불 요청이나 결제 시점·서비스 제공 여부 확인 등 실행 방안도 제시하지 않았습니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.857,
+      "reasoning_tokens": 32
+    },
+    {
+      "case": "3_off_topic_fabricated",
+      "case_label": "문서와 무관한 내용을 지어냄",
+      "effort": "omitted",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.\n</retrieved_documents>\n<answer>가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 정기구독 해지 후 다음 달에 결제된 문제와 전혀 관련이 없고, 가전제품의 무상 A/S에 관한 내용을 제시하고 있습니다. 또한 제공된 참조 문서의 정기구독 해지·환불 기준을 전혀 반영하지 않았습니다. 따라서 질문에 적절히 답하지 못했으며, 해지 신청일·결제일 확인, 서비스 미제공 기간의 일할 환불 요청 등 구체적인 대응 방안도 포함하지 않아 문제 해결에 불충분합니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.148,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "3_off_topic_fabricated",
+      "case_label": "문서와 무관한 내용을 지어냄",
+      "effort": "omitted",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.\n</retrieved_documents>\n<answer>가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 가전제품의 무상 A/S에 관한 내용으로, 사용자가 문의한 정기구독 자동결제 및 해지 후 재결제 문제와 전혀 관련이 없습니다. 또한 제공된 문서의 핵심인 해지 후 이미 결제된 기간의 서비스 유지, 미제공 기간에 대한 일할 환불 가능성도 반영하지 않았습니다. 따라서 질문에 대한 해결책(결제 내역과 해지 시점 확인, 서비스 제공 여부에 따른 환불 요청 등)이 전혀 제시되지 않았고, 답변의 주장도 검색 문서에 근거하지 않습니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.339,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "3_off_topic_fabricated",
+      "case_label": "문서와 무관한 내용을 지어냄",
+      "effort": "none",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.\n</retrieved_documents>\n<answer>가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 가전제품 A/S에 관한 내용으로, 사용자가 문의한 정기구독 자동결제 및 해지 후 재결제 문제와 전혀 관련이 없습니다. 또한 참조 문서의 핵심인 해지 후 결제된 기간의 서비스 유지, 서비스 미제공 기간에 대한 일할 환불 가능성도 반영하지 않았습니다. 따라서 질문에 적절히 답하지 못했고, 환불 요청·결제 내역 확인 등 구체적인 해결 방안도 제시하지 않았습니다. 답변 내용 자체가 제공된 검색 문서에 근거하지 않아 근거성도 부족합니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.076,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "3_off_topic_fabricated",
+      "case_label": "문서와 무관한 내용을 지어냄",
+      "effort": "none",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.\n</retrieved_documents>\n<answer>가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 정기구독 해지 후 다음 달 결제 문제와 전혀 관련이 없고, 가전제품의 무상 A/S라는 다른 주제를 다룹니다. 제공된 참조 문서의 내용(해지 후 결제된 기간의 서비스 유지, 미제공 기간에 대한 일할 환불 가능)도 반영하지 않았습니다. 또한 결제 내역 확인, 사업자 환불 요청, 해지 시점 및 미제공 기간 확인 등 사용자가 실행할 수 있는 구체적인 대응 방안이 없습니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.026,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "3_off_topic_fabricated",
+      "case_label": "문서와 무관한 내용을 지어냄",
+      "effort": "none",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.\n</retrieved_documents>\n<answer>가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 가전제품의 무상 A/S에 관한 내용으로, 사용자가 문의한 정기구독 해지 후 추가 결제 및 환불 문제와 전혀 관련이 없습니다. 또한 제시된 참조 문서의 내용(해지 후 결제된 기간의 서비스 유지, 미제공 기간의 일할 환불 가능성)을 반영하지 않았고, 결제 내역 확인·해지 시점 검토·사업자 환불 요청 등 구체적인 대응 방안도 제시하지 않았습니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 1.848,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "3_off_topic_fabricated",
+      "case_label": "문서와 무관한 내용을 지어냄",
+      "effort": "low",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.\n</retrieved_documents>\n<answer>가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 구독 해지 후 다음 달 결제 문제와 무관하게 가전제품의 무상 A/S에 대해 설명하고 있어 사용자 질문에 전혀 답하지 못했습니다. 또한 가전제품 A/S 1년 보장이라는 내용은 제공된 참조 문서에 근거가 없어 근거성이 없습니다. 해지 후 결제된 기간의 서비스 유지, 미제공 기간에 대한 일할 환불 가능성, 환불 요청 등 구체적인 대응 방안도 포함되어 있지 않습니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.18,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "3_off_topic_fabricated",
+      "case_label": "문서와 무관한 내용을 지어냄",
+      "effort": "low",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.\n</retrieved_documents>\n<answer>가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 가전제품의 무상 A/S에 관한 내용으로, 사용자가 문의한 정기구독 해지 후 재결제 문제와 전혀 관련이 없습니다. 또한 제공된 참조 문서의 핵심 내용(해지 후 이미 결제된 기간의 서비스 유지, 미제공 기간에 대한 일할 환불 가능성)을 반영하지 않았습니다. 사용자가 취할 수 있는 환불 요청, 결제 내역 확인, 사업자 문의 등 구체적인 해결 방안도 제시하지 않았습니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.231,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "3_off_topic_fabricated",
+      "case_label": "문서와 무관한 내용을 지어냄",
+      "effort": "low",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>매달 자동결제되는 구독 서비스를 해지했는데 다음 달에 또 결제가 됐어요.</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.80)\n정기구독 서비스는 해지 신청 후에도 이미 결제된 기간까지는 서비스가 유지되며, 환불은 원칙적으로 불가하다. 단, 서비스 미제공 기간에 대해서는 일할 계산하여 환불한다.\n</retrieved_documents>\n<answer>가전제품은 구입 후 1년간 무상 A/S를 받으실 수 있습니다. 고장 시 가까운 서비스센터를 방문해 수리 접수를 하시면 됩니다.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 가전제품의 무상 A/S에 관한 내용으로, 사용자가 문의한 정기구독 해지 후 다음 달 결제 문제와 전혀 관련이 없습니다. 또한 제공된 문서의 핵심인 해지 후 결제된 기간의 서비스 유지, 미제공 기간에 대한 일할 환불 가능성도 반영하지 않았습니다. 따라서 질문에 적절히 답하지 못했고, 결제 내역 확인·사업자 환불 요청·분쟁 제기 등 구체적인 해결 절차도 제시하지 않아 문제 해결에 불충분합니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.293,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "4_vague_missing_steps",
+      "case_label": "구체적 절차 누락",
+      "effort": "omitted",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.\n</retrieved_documents>\n<answer>상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 배송 중 파손 상품에 대해 교환 또는 환불을 요청할 수 있고 판매자에게 문의해야 한다는 핵심을 담고 있어 질문과 관련성이 있습니다. 또한 해당 주장은 참조 문서에 근거합니다. 다만 수령 후 7일 이내에 요청해야 한다는 기한, 사진 증빙을 함께 제출해야 한다는 구체적 절차, 판매자가 책임을 회피할 경우 소비자원 분쟁조정을 신청할 수 있다는 후속 대응이 빠져 있어 사용자가 실제로 문제를 해결하기에 충분하지 않습니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 3.342,
+      "reasoning_tokens": 107
+    },
+    {
+      "case": "4_vague_missing_steps",
+      "case_label": "구체적 절차 누락",
+      "effort": "omitted",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.\n</retrieved_documents>\n<answer>상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 배송 중 파손 상품에 대해 교환 또는 환불이 가능하다는 핵심 내용을 참조 문서에 근거해 언급하고 있어 근거성과 관련성은 충족합니다. 다만 수령 후 7일 이내라는 기한과 사진 증빙이 필요하다는 구체적 절차가 빠져 있으며, 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다는 후속 대응도 안내하지 않았습니다. 따라서 사용자가 실제로 문제를 해결할 수 있는 실행 방안이 충분하지 않습니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.796,
+      "reasoning_tokens": 66
+    },
+    {
+      "case": "4_vague_missing_steps",
+      "case_label": "구체적 절차 누락",
+      "effort": "omitted",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.\n</retrieved_documents>\n<answer>상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 배송 중 파손 상품에 대해 교환·환불이 가능하다는 내용과 판매자에게 문의하라는 조치를 포함해, 질문의 핵심에는 부합합니다. 다만 참조 문서에 제시된 ‘수령 후 7일 이내’, ‘사진 증빙과 함께 요청’, ‘판매자가 책임을 회피하면 소비자원 분쟁조정 신청’이라는 구체적인 절차와 기한이 빠져 있어 실행 방안이 충분하지 않습니다. ‘상품에 문제가 있으면’이라는 표현도 배송 중 파손이라는 적용 범위보다 다소 넓지만, 해당 사례에는 대체로 부합합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 3.603,
+      "reasoning_tokens": 134
+    },
+    {
+      "case": "4_vague_missing_steps",
+      "case_label": "구체적 절차 누락",
+      "effort": "none",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.\n</retrieved_documents>\n<answer>상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 배송 중 파손된 상품에 대해 교환·환불이 가능하다는 핵심 방향을 제시하고 판매자에게 문의하라고 안내해 질문과 관련성이 있습니다. 그러나 참조 문서에 명시된 중요한 조건인 ‘수령 후 7일 이내’와 ‘사진 증빙’을 빠뜨렸고, 판매자가 책임을 회피할 경우 소비자원 분쟁조정을 신청할 수 있다는 구체적인 후속 조치도 포함하지 않았습니다. 따라서 문서에 근거하지 않은 주장은 없지만, 사용자가 실제로 문제를 해결하기 위한 실행 방안이 불충분합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.209,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "4_vague_missing_steps",
+      "case_label": "구체적 절차 누락",
+      "effort": "none",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.\n</retrieved_documents>\n<answer>상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 배송 중 파손 시 교환·환불이 가능하다는 핵심 내용과 판매자 문의를 안내해 질문과 대체로 관련이 있습니다. 다만 참조 문서에 있는 중요한 실행 조건인 ‘수령 후 7일 이내’, ‘사진 증빙 첨부’를 누락했고, 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다는 후속 조치도 빠져 있어 구체적인 해결 방안이 불충분합니다. 또한 답변의 주장은 제공된 문서에 근거하므로 근거성은 충족합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.153,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "4_vague_missing_steps",
+      "case_label": "구체적 절차 누락",
+      "effort": "none",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.\n</retrieved_documents>\n<answer>상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 배송 중 파손 상품에 대해 교환 또는 환불이 가능하다는 핵심 방향을 담고 있어 질문과 관련됩니다. 그러나 참조 문서에 있는 구체적 조건인 ‘수령 후 7일 이내’, ‘사진 증빙과 함께 요청’이 빠져 있어 실제로 어떻게 대응해야 하는지 충분히 안내하지 못했습니다. 또한 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다는 후속 조치도 누락되었습니다. 따라서 문서에 근거한 내용이기는 하지만, 실행 가능한 절차와 기한이 부족합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.139,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "4_vague_missing_steps",
+      "case_label": "구체적 절차 누락",
+      "effort": "low",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.\n</retrieved_documents>\n<answer>상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 배송 중 파손 상품에 대해 교환 또는 환불이 가능하다는 핵심 내용을 일부 반영하고 판매자에게 문의하라고 안내해 질문과 관련성이 있습니다. 다만 참조 문서에 명시된 중요한 실행 조건인 ‘수령 후 7일 이내 요청’과 ‘사진 증빙 첨부’를 빠뜨렸고, 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다는 후속 조치도 제시하지 않았습니다. 따라서 구체적인 실행 방안이 부족합니다. 답변의 주장 자체는 제공된 문서에 근거합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.207,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "4_vague_missing_steps",
+      "case_label": "구체적 절차 누락",
+      "effort": "low",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.\n</retrieved_documents>\n<answer>상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 배송 중 파손 상품에 대해 교환·환불이 가능하다는 점과 판매자에게 문의해야 한다는 내용을 담고 있어 retrieved_documents에 근거하며 질문에도 관련됩니다. 다만 수령 후 7일 이내에 요청해야 한다는 기한, 사진 증빙을 함께 제출해야 한다는 구체적 절차, 판매자가 책임을 회피할 경우 소비자원 분쟁조정을 신청할 수 있다는 후속 대응이 빠져 있어 문제 해결을 위한 실행 방안이 충분하지 않습니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.909,
+      "reasoning_tokens": 29
+    },
+    {
+      "case": "4_vague_missing_steps",
+      "case_label": "구체적 절차 누락",
+      "effort": "low",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>택배로 받은 머그컵이 깨져서 왔어요. 어떻게 하면 되나요?</question>\n<retrieved_documents>\n[참조 1] (소비자분쟁해결기준, 유사도 0.93)\n배송 중 파손된 상품은 수령 후 7일 이내 사진 증빙과 함께 판매자에게 교환 또는 환불을 요청할 수 있다. 판매자가 책임을 회피할 경우 소비자원에 분쟁조정을 신청할 수 있다.\n</retrieved_documents>\n<answer>상품에 문제가 있으면 소비자분쟁해결기준에 따라 교환이나 환불을 받을 수 있습니다. 판매자에게 문의해보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 배송 중 파손 상품에 대해 교환 또는 환불이 가능하다는 점과 판매자에게 문의하라는 안내를 담고 있어 질문과 관련되고, 참조 문서에 근거합니다. 다만 수령 후 7일 이내에 요청해야 한다는 기한, 사진 증빙이 필요하다는 구체적 절차, 판매자가 책임을 회피할 경우 소비자원 분쟁조정을 신청할 수 있다는 후속 대응이 빠져 있어 사용자가 실제로 문제를 해결하기에는 불충분합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.632,
+      "reasoning_tokens": 28
+    },
+    {
+      "case": "5_fully_compliant",
+      "case_label": "전부 통과 sanity",
+      "effort": "omitted",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.\n</retrieved_documents>\n<answer>무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 결제일로부터 7일 이내 전액 환불이 가능하다는 핵심 내용과, 무료체험 종료 후 자동 유료 전환이라는 설명을 참조 문서에 근거해 적절히 전달했습니다. 또한 고객센터에 취소·환불을 신청하라는 실행 방안도 포함되어 있어 질문에 적절하고 구체적입니다. 다만 참조 문서에는 환불 신청 경로가 ‘고객센터’라고 명시되어 있지 않으므로, 모든 주장이 retrieved_documents에만 근거해야 한다는 엄격한 기준에서는 해당 부분이 근거 부족입니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": false,
+      "latency_sec": 4.866,
+      "reasoning_tokens": 279
+    },
+    {
+      "case": "5_fully_compliant",
+      "case_label": "전부 통과 sanity",
+      "effort": "omitted",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.\n</retrieved_documents>\n<answer>무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 결제일로부터 7일 이내 전액 환불이 가능하다는 핵심 내용을 참조 문서에 근거해 안내했고, 고객센터에 환불을 신청하라는 구체적 행동도 제시해 질문에 대체로 적절합니다. 다만 사용자는 ‘무료체험인 줄 알고 가입했는데 바로 결제됐다’고 했는데, 답변은 이를 확인하지 않고 ‘무료체험 기간이 끝난 뒤 자동 전환’으로 단정에 가깝게 추정했습니다. 또한 ‘고객센터’에 신청하라는 내용은 문서에 명시되어 있지 않습니다. 따라서 답변의 핵심 결론은 타당하지만, 모든 주장이 검색 문서에 직접 근거한다고 보기는 어렵고, 즉시 결제된 경우에도 동일한 환불 조건이 적용되는지 확인하라는 안내가 부족합니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": false
+      },
+      "all_correct": false,
+      "latency_sec": 4.835,
+      "reasoning_tokens": 219
+    },
+    {
+      "case": "5_fully_compliant",
+      "case_label": "전부 통과 sanity",
+      "effort": "omitted",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.\n</retrieved_documents>\n<answer>무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 결제일로부터 7일 이내 전액 환불 가능하다는 핵심 내용과 고객센터에 취소·환불을 요청하라는 실행 방안을 제시해 질문에 적절히 답하고 있습니다. 다만 사용자는 결제가 체험 종료 후인지, 가입 즉시인지 밝히지 않았는데도 ‘무료체험 기간이 끝난 뒤 자동으로 전환된 것으로 보입니다’라고 단정적으로 추정했습니다. 또한 고객센터 신청 안내는 일반적으로 타당하지만 제공된 참조 문서에 직접 명시되어 있지는 않습니다. 따라서 관련성과 실행 가능성은 충족하지만, 답변의 모든 주장이 참조 문서에 근거해야 한다는 기준에서는 부족합니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": false,
+      "latency_sec": 3.965,
+      "reasoning_tokens": 172
+    },
+    {
+      "case": "5_fully_compliant",
+      "case_label": "전부 통과 sanity",
+      "effort": "none",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.\n</retrieved_documents>\n<answer>무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 참조 문서의 핵심 내용인 무료체험 종료 후 자동 유료 전환과 결제일로부터 7일 이내 전액 환불 가능성을 정확히 반영하고 있습니다. 또한 고객센터에 취소·환불을 신청하라는 실행 방안도 제시해 질문에 적절히 답했습니다. 다만 사용자는 ‘무료체험인 줄 알고 가입했는데 바로 유료 결제’라고 했으므로, 실제로 체험 종료 후 결제된 것인지 즉시 결제된 것인지 확인하라고 안내하면 더 정확합니다. 환불 가능 조건이 7일 이내라는 점은 명시했지만, 7일이 지난 경우의 처리나 신청 시 확인할 정보 등은 문서에 근거가 없어 추가할 수 없습니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.521,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "5_fully_compliant",
+      "case_label": "전부 통과 sanity",
+      "effort": "none",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.\n</retrieved_documents>\n<answer>무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 참조 문서의 핵심 내용인 무료체험 종료 후 자동 유료 전환, 결제일로부터 7일 이내 전액 환불 가능, 고객센터에 취소·환불 신청이라는 실행 방안을 정확히 반영했습니다. 따라서 사용자 질문에 직접 답하고 있으며 구체적인 다음 행동도 포함되어 있습니다. 다만 사용자는 ‘바로 유료 결제’라고 했으므로 실제로 무료체험 종료 후 결제된 것인지 단정하기보다 결제 시점과 체험 기간을 확인하라고 안내했으면 더 정확했을 수 있습니다. 또한 7일이 지난 경우의 처리 가능성이나 신청 시 준비할 정보는 문서에 없으므로 추가하지 않은 것은 타당합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.561,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "5_fully_compliant",
+      "case_label": "전부 통과 sanity",
+      "effort": "none",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.\n</retrieved_documents>\n<answer>무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 참조 문서에 근거해 무료체험 종료 후 자동 결제 및 결제일로부터 7일 이내 전액 환불 가능성을 설명하고 있어 근거성과 질문 적합성이 높습니다. 또한 고객센터에 취소·환불을 신청하라는 실행 방안도 포함되어 있습니다. 다만 사용자는 ‘무료체험인 줄 알고 가입했는데 바로 결제’라고 했으므로, 실제로 체험 종료 후 결제된 것인지 가입 즉시 결제된 것인지 확인이 필요합니다. 답변이 이를 ‘~로 보입니다’라고 단정에 가깝게 전제했고, 환불 가능 조건인 결제일로부터 7일 이내 여부를 사용자에게 확인하도록 명시하지 않았습니다. 참조 문서에 없는 구체적인 신청 절차나 법적 권리까지 추가하지 않은 점은 적절합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.821,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "5_fully_compliant",
+      "case_label": "전부 통과 sanity",
+      "effort": "low",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.\n</retrieved_documents>\n<answer>무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 참조 문서의 핵심 내용인 ‘무료체험 종료 후 자동 유료 전환’과 ‘결제일로부터 7일 이내 전액 환불 가능’을 정확히 반영하고 있습니다. 또한 고객센터에 결제 취소 및 환불을 신청하라는 실행 방안도 제시해 질문에 적절히 답변합니다. 다만 실제로 무료체험 종료 후 전환된 것인지는 사용자 정보만으로 확정할 수 없으므로 ‘보입니다’라고 표현한 점은 적절합니다. 환불 신청 시 결제일과 7일 이내 여부를 확인하라는 안내가 추가되면 더 구체적일 수 있으나, 현재 답변도 문제 해결에 충분합니다.",
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 4.003,
+      "reasoning_tokens": 129
+    },
+    {
+      "case": "5_fully_compliant",
+      "case_label": "전부 통과 sanity",
+      "effort": "low",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.\n</retrieved_documents>\n<answer>무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 무료체험 종료 후 자동 유료 전환 및 결제일로부터 7일 이내 전액 환불 가능하다는 참조 내용에 근거하고 있어 사용자 질문에 대체로 적절하게 답했습니다. 다만 사용자는 ‘바로 결제’되었다고 했으므로 실제로 무료체험 종료 후 결제된 것인지 확인하지 않고 단정적으로 추정한 점이 부족합니다. 또한 ‘고객센터에 신청’하라는 절차는 참조 문서에 명시되어 있지 않아 엄격한 의미에서 모든 주장이 문서에 근거했다고 보기 어렵습니다. 환불 가능 기간 내라면 결제 취소·환불을 요청하라는 실행 방안은 포함되어 있어 문제 해결에 충분히 관련됩니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": false,
+      "latency_sec": 4.909,
+      "reasoning_tokens": 149
+    },
+    {
+      "case": "5_fully_compliant",
+      "case_label": "전부 통과 sanity",
+      "effort": "low",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>무료체험인 줄 알고 가입했는데 바로 유료 결제가 됐어요. 환불받을 수 있나요?</question>\n<retrieved_documents>\n[참조 1] (전자상거래법, 유사도 0.95)\n무료체험 기간 중 해지하지 않고 그대로 두면 체험 종료 다음 날 자동으로 유료 결제가 전환된다. 체험 중 해지하면 결제되지 않는다. 이미 결제된 경우 결제일로부터 7일 이내 전액 환불이 가능하다.\n</retrieved_documents>\n<answer>무료체험 기간이 끝난 뒤 자동으로 유료 결제가 전환된 것으로 보입니다. 결제일로부터 7일 이내라면 전액 환불을 요청하실 수 있으니, 고객센터에 결제 취소 및 환불을 신청해 보세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "prediction": {
+        "feedback": "답변은 결제일로부터 7일 이내 전액 환불이 가능하다는 참조 내용에 근거하고 있으며, 환불 신청을 권하는 등 질문에도 적절히 답하고 있습니다. 다만 사용자는 ‘바로 유료 결제’되었다고 했으므로 실제로 무료체험 종료 후 전환된 것인지 확인하지 않고 단정적으로 추정한 점은 다소 부족합니다. 또한 고객센터에 신청하라는 절차는 참조 문서에 명시되어 있지 않습니다. 그래도 7일 이내 환불 요청이라는 핵심 실행 방안은 포함되어 있어 문제 해결에 대체로 충분합니다.",
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "correct_per_field": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": false,
+      "latency_sec": 5.083,
+      "reasoning_tokens": 189
+    },
+    {
+      "case": "6_retrieval_mismatch",
+      "case_label": "검색 자체가 질문과 무관",
+      "effort": "omitted",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.\n</retrieved_documents>\n<answer>반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 retrieved_documents의 숙박·반려동물 관련 내용에는 근거하지만, 사용자의 질문인 ‘환불도 안 되고 연락도 되지 않는 중고거래 사기’와 전혀 관련이 없습니다. 중고거래 사기 신고, 증거 확보, 결제수단을 통한 지급정지·환불 요청, 경찰 신고, 플랫폼 문의 등 문제 해결을 위한 구체적인 실행 방안도 제시하지 않았습니다. 따라서 근거성은 인정되나 질문 적합성과 완결성은 부족합니다.",
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 3.08,
+      "reasoning_tokens": 82
+    },
+    {
+      "case": "6_retrieval_mismatch",
+      "case_label": "검색 자체가 질문과 무관",
+      "effort": "omitted",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.\n</retrieved_documents>\n<answer>반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 숙박시설의 반려동물 동반 여부에 관한 내용으로, 사용자가 질문한 ‘환불 거부 및 연락 두절인 중고거래 사기’와 전혀 관련이 없습니다. 따라서 피해자에게 필요한 증거 보존, 거래 플랫폼 신고, 경찰 신고(사이버범죄 신고 포함), 은행·결제수단을 통한 지급정지 또는 환급 문의 등의 실행 방안이 전혀 제시되지 않았습니다. 다만 답변에 포함된 숙박·반려동물 관련 주장은 제공된 참조 문서의 내용에 대체로 근거하므로, 근거성 자체는 인정할 수 있으나 질문에 대한 답변으로는 부적절합니다.",
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 3.797,
+      "reasoning_tokens": 98
+    },
+    {
+      "case": "6_retrieval_mismatch",
+      "case_label": "검색 자체가 질문과 무관",
+      "effort": "omitted",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.\n</retrieved_documents>\n<answer>반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 반려동물 동반 숙박 약관에 관한 내용으로, 중고거래 사기·환불 거부·연락 두절이라는 사용자의 질문과 전혀 관련이 없습니다. 따라서 신고, 증거 보존, 결제수단 이용, 경찰 신고 등 문제 해결을 위한 실행 방안도 포함하지 않아 질문에 적절히 답하지 못했고 완결성도 없습니다. 다만 답변에 포함된 ‘반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측 책임을 묻기 어렵다’는 내용 자체는 제공된 참조 문서에 근거합니다.",
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.943,
+      "reasoning_tokens": 65
+    },
+    {
+      "case": "6_retrieval_mismatch",
+      "case_label": "검색 자체가 질문과 무관",
+      "effort": "none",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.\n</retrieved_documents>\n<answer>반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 반려동물 동반 숙박 약관에 관한 내용으로, 사용자가 질문한 중고거래 사기(환불 거부 및 연락 두절)와 전혀 관련이 없습니다. 따라서 질문에 대한 신고·증거 확보·지급정지·민사·형사 절차 등 구체적인 대응 방안이 전혀 포함되어 있지 않습니다. 다만 답변에 포함된 숙박 관련 주장은 참조 문서에 근거하므로 그 범위에서는 grounded하지만, 사용자 질문에 대한 답변으로서는 근거 있는 내용이 아니며 관련성·완결성이 없습니다.",
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.672,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "6_retrieval_mismatch",
+      "case_label": "검색 자체가 질문과 무관",
+      "effort": "none",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.\n</retrieved_documents>\n<answer>반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 중고거래 사기와 환불·연락두절 문제에 답하지 않고, 전혀 무관한 반려동물 동반 숙박 약관만 설명합니다. 따라서 질문의 핵심인 증거 확보, 거래 플랫폼 신고, 경찰 신고·진정, 지급정지나 분쟁조정 등 실행 방안이 전혀 포함되지 않았습니다. 또한 답변의 내용 자체는 참조 문서의 숙박 약관에 근거하지만, 중고거래 사기 질문과 관련된 주장을 뒷받침하지 못해 실질적으로 질문에 대한 근거가 없습니다.",
+        "is_grounded": false,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": false,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": false,
+      "latency_sec": 2.598,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "6_retrieval_mismatch",
+      "case_label": "검색 자체가 질문과 무관",
+      "effort": "none",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.\n</retrieved_documents>\n<answer>반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 반려동물 동반 숙박 약관만을 근거로 하며, 사용자가 질문한 중고거래 사기(환불 거부 및 연락 두절)와 전혀 관련이 없습니다. 따라서 질문에 대한 신고·증거 보존·결제수단 분쟁 신청 등 구체적인 대응 방안이 전혀 제시되지 않았고, 답변의 핵심 주장도 중고거래 사기 문제를 해결하는 데 적용되지 않습니다.",
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.17,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "6_retrieval_mismatch",
+      "case_label": "검색 자체가 질문과 무관",
+      "effort": "low",
+      "rep": 0,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.\n</retrieved_documents>\n<answer>반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 반려동물 동반 숙박 약관만을 근거로 하며, 사용자가 질문한 중고거래 사기·환불 거부·연락 두절 상황과 전혀 관련이 없습니다. 따라서 질문에 대한 신고, 증거 확보, 결제수단 분쟁 신청 등 구체적인 해결 방안이 전혀 포함되지 않았고, 답변의 핵심 주장도 사용자의 사안에는 적용되지 않습니다.",
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.104,
+      "reasoning_tokens": 0
+    },
+    {
+      "case": "6_retrieval_mismatch",
+      "case_label": "검색 자체가 질문과 무관",
+      "effort": "low",
+      "rep": 1,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.\n</retrieved_documents>\n<answer>반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 반려동물 동반 숙박 약관에 관한 내용으로, 사용자가 질문한 중고거래 사기, 환불 거부, 연락 두절 상황과 전혀 관련이 없습니다. 따라서 사기 피해 신고, 증거 확보, 거래 플랫폼 신고, 은행 지급정지·환급 요청 등 사용자가 취할 실행 방안을 제시하지 않았습니다. 답변에 포함된 숙소 관련 주장은 참조 문서에는 근거하지만, 중고거래 사기 문제에 대한 답변으로는 근거가 없고 적절하지 않습니다.",
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.817,
+      "reasoning_tokens": 51
+    },
+    {
+      "case": "6_retrieval_mismatch",
+      "case_label": "검색 자체가 질문과 무관",
+      "effort": "low",
+      "rep": 2,
+      "prompt": {
+        "system": "당신은 답변 검증관입니다. 생성된 답변을 다음 세 기준으로 엄격히 평가하세요.\n판정 전에 feedback에 판단 근거와 부족한 점을 구체적으로 서술하세요.\n- is_grounded: 답변의 모든 주장이 <retrieved_documents>에 근거하는가\n- is_relevant: 답변이 사용자 질문에 적절히 대답하는가\n- is_complete: 사용자의 문제를 해결할 구체적인 실행 방안이 포함되었는가\n",
+        "user": "<question>환불도 안 해주고 연락도 안 되는 중고거래 사기를 당했어요. 어떻게 해야 하나요?</question>\n<retrieved_documents>\n[참조 1] (숙박 이용약관, 유사도 0.42)\n반려동물 동반 숙박이 가능한 숙소는 예약 시 별도 표기되어 있다. 표기되지 않은 숙소에 반려동물을 데려가 발생한 문제는 숙소 측 책임이 아니다.\n</retrieved_documents>\n<answer>반려동물 동반 가능 여부가 표기되지 않은 숙소라면 숙소 측에 책임을 묻기 어렵습니다. 예약 전 동반 가능 여부를 꼭 확인하세요.</answer>\n"
+      },
+      "gold": {
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "prediction": {
+        "feedback": "답변은 숙박시설의 반려동물 동반 약관만 언급하고 있어, 사용자가 질문한 중고거래 사기·환불 거부·연락 두절 상황과 전혀 관련이 없습니다. 따라서 질문에 대한 신고, 증거 보존, 결제수단 분쟁 제기 등 실행 방안이 포함되지 않았습니다. 또한 답변의 내용 자체는 참조 문서에 근거하지만, 사용자 질문에 대한 답변으로서 필요한 주장이나 조치가 없어 관련성과 완결성이 부족합니다.",
+        "is_grounded": true,
+        "is_relevant": false,
+        "is_complete": false
+      },
+      "correct_per_field": {
+        "is_grounded": true,
+        "is_relevant": true,
+        "is_complete": true
+      },
+      "all_correct": true,
+      "latency_sec": 2.368,
+      "reasoning_tokens": 0
+    }
+  ]
+}
