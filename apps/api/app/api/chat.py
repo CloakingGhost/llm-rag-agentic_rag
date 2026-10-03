@@ -19,13 +19,14 @@ from typing import Any, Literal
 import orjson
 from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.responses import StreamingResponse
-from openai import APIStatusError, AsyncOpenAI
+from openai import APIStatusError
 from pydantic import BaseModel, Field
 
 from app.config import DEFAULT_MODEL, MODEL_CATALOG, get_settings
 from app.db.repository import save_conversation, save_request, save_run
 from app.kb.store import get_kb
 from app.metrics import pipeline_latency_seconds, pipeline_runs_total, semaphore_in_use
+from app.observability import make_openai_client, pipeline_trace
 from app.pipelines.agentic import run_agentic
 from app.pipelines.base import RunRecord
 from app.pipelines.session_memory import get_session_memory
@@ -126,7 +127,7 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
 
     async def stream() -> AsyncIterator[bytes]:
         queue: asyncio.Queue[tuple[str, dict] | None] = asyncio.Queue()
-        client = AsyncOpenAI(api_key=x_openai_key)
+        client = make_openai_client(x_openai_key)
         records: dict[str, RunRecord] = {
             pipeline: RunRecord(
                 run_id=f"{request_id}-{pipeline}",
@@ -141,6 +142,21 @@ async def chat(payload: ChatRequest, request: Request, x_openai_key: str = Heade
             await queue.put((event, data))
 
         async def run_one(pipeline: str) -> None:
+            record = records[pipeline]
+            with pipeline_trace(
+                pipeline=pipeline,
+                request_id=request_id,
+                conversation_id=conversation_id,
+                client_id=payload.client_id,
+                model=payload.model,
+                question=payload.question,
+            ) as trace:
+                try:
+                    await _run_pipeline(pipeline)
+                finally:
+                    trace.finish(record)
+
+        async def _run_pipeline(pipeline: str) -> None:
             record = records[pipeline]
             try:
                 async with _tracked_sem():

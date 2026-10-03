@@ -157,6 +157,14 @@ class Settings(BaseSettings):
     session_max: int = 500
     session_ttl_min: int = 120
 
+    # LangFuse 트레이싱 (docs/10_observability_load_test_plan.md 3단계). 키가 비어 있으면 꺼진다.
+    # enabled는 키가 있어도 끌 수 있게 둔 스위치다 — 켠 상태와 끈 상태를 같은 코드로
+    # k6 비교(오버헤드 측정)하려면 필요하다
+    langfuse_public_key: str = ""
+    langfuse_secret_key: str = ""
+    langfuse_base_url: str = "https://us.cloud.langfuse.com"
+    langfuse_enabled: bool = True
+
     # 도구 호출 (논문 3.5 Lightweight ReAct + 9.3 Mock SQLite DB).
     # 논문 4.1절이 최종 평가에서 이 모듈을 껐으므로 기본값도 꺼 둔다.
     # 켜면 라우터가 3분기(policy_inquiry / system_action / out_of_domain)가 된다
@@ -167,6 +175,10 @@ class Settings(BaseSettings):
     @property
     def origins(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
+
+    @property
+    def langfuse_active(self) -> bool:
+        return self.langfuse_enabled and bool(self.langfuse_public_key and self.langfuse_secret_key)
 
 
 @lru_cache

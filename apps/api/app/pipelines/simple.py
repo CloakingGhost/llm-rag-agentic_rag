@@ -9,6 +9,7 @@ from openai import AsyncOpenAI
 from app.config import get_settings
 from app.kb.retriever import hybrid_search, vector_retrieve
 from app.kb.store import KnowledgeBase
+from app.observability import lf
 
 from .base import Emit, RunRecord, format_references, load_prompts
 
@@ -25,6 +26,7 @@ async def run_vanilla(client: AsyncOpenAI, record: RunRecord, question: str, emi
             {"role": "system", "content": prompts["vanilla"]["system"]},
             {"role": "user", "content": question},
         ],
+        **lf("generate"),
     )
     usage = response.usage
     cached = getattr(getattr(usage, "prompt_tokens_details", None), "cached_tokens", 0) or 0
@@ -79,6 +81,7 @@ async def run_native(client: AsyncOpenAI, kb: KnowledgeBase, record: RunRecord, 
                 "content": prompts["native"]["user"].format(references=references, question=question),
             },
         ],
+        **lf("generate"),
     )
     usage = response.usage
     cached = getattr(getattr(usage, "prompt_tokens_details", None), "cached_tokens", 0) or 0

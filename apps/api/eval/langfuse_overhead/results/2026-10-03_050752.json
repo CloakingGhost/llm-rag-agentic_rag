@@ -1,0 +1,198 @@
+{
+  "config": {
+    "calls_per_request": 12,
+    "sequential_requests": 25,
+    "concurrency": 20,
+    "concurrent_rounds": 5,
+    "pairs": 3,
+    "prompt_chars": 12500
+  },
+  "summary": {
+    "sequential": {
+      "call_mean_ms": {
+        "plain": 2.347,
+        "traced": 2.984,
+        "diff": 0.637
+      },
+      "call_p95_ms": {
+        "plain": 3.129,
+        "traced": 3.877,
+        "diff": 0.748
+      },
+      "call_p99_ms": {
+        "plain": 3.334,
+        "traced": 4.451,
+        "diff": 1.117
+      },
+      "request_mean_ms": {
+        "plain": 28.18,
+        "traced": 36.0,
+        "diff": 7.82
+      }
+    },
+    "concurrent": {
+      "call_mean_ms": {
+        "plain": 32.163,
+        "traced": 50.603,
+        "diff": 18.44
+      },
+      "call_p95_ms": {
+        "plain": 38.035,
+        "traced": 72.356,
+        "diff": 34.321
+      },
+      "call_p99_ms": {
+        "plain": 44.01,
+        "traced": 291.132,
+        "diff": 247.122
+      },
+      "request_mean_ms": {
+        "plain": 385.97,
+        "traced": 607.42,
+        "diff": 221.45
+      }
+    },
+    "concurrent_calls_per_sec": {
+      "plain": 599.4,
+      "traced": 381.7
+    }
+  },
+  "runs": {
+    "plain": [
+      {
+        "arm": "plain",
+        "sequential": {
+          "calls": 300,
+          "call_mean_ms": 2.384,
+          "call_p50_ms": 2.359,
+          "call_p95_ms": 3.08,
+          "call_p99_ms": 3.509,
+          "request_mean_ms": 28.63
+        },
+        "concurrent": {
+          "calls": 1200,
+          "call_mean_ms": 33.006,
+          "call_p50_ms": 33.524,
+          "call_p95_ms": 38.035,
+          "call_p99_ms": 43.776,
+          "request_mean_ms": 396.09,
+          "wall_sec": 2.05,
+          "calls_per_sec": 584.3
+        },
+        "flush_sec": null
+      },
+      {
+        "arm": "plain",
+        "sequential": {
+          "calls": 300,
+          "call_mean_ms": 2.296,
+          "call_p50_ms": 2.292,
+          "call_p95_ms": 3.131,
+          "call_p99_ms": 3.317,
+          "request_mean_ms": 27.57
+        },
+        "concurrent": {
+          "calls": 1200,
+          "call_mean_ms": 32.163,
+          "call_p50_ms": 32.615,
+          "call_p95_ms": 37.451,
+          "call_p99_ms": 44.01,
+          "request_mean_ms": 385.97,
+          "wall_sec": 2.0,
+          "calls_per_sec": 599.4
+        },
+        "flush_sec": null
+      },
+      {
+        "arm": "plain",
+        "sequential": {
+          "calls": 300,
+          "call_mean_ms": 2.347,
+          "call_p50_ms": 2.365,
+          "call_p95_ms": 3.129,
+          "call_p99_ms": 3.334,
+          "request_mean_ms": 28.18
+        },
+        "concurrent": {
+          "calls": 1200,
+          "call_mean_ms": 31.054,
+          "call_p50_ms": 31.187,
+          "call_p95_ms": 38.247,
+          "call_p99_ms": 45.197,
+          "request_mean_ms": 372.67,
+          "wall_sec": 1.93,
+          "calls_per_sec": 620.8
+        },
+        "flush_sec": null
+      }
+    ],
+    "traced": [
+      {
+        "arm": "traced",
+        "sequential": {
+          "calls": 300,
+          "call_mean_ms": 2.984,
+          "call_p50_ms": 2.927,
+          "call_p95_ms": 3.877,
+          "call_p99_ms": 4.451,
+          "request_mean_ms": 36.0
+        },
+        "concurrent": {
+          "calls": 1200,
+          "call_mean_ms": 51.74,
+          "call_p50_ms": 45.758,
+          "call_p95_ms": 72.356,
+          "call_p99_ms": 301.313,
+          "request_mean_ms": 621.05,
+          "wall_sec": 3.21,
+          "calls_per_sec": 373.4
+        },
+        "flush_sec": 14.11
+      },
+      {
+        "arm": "traced",
+        "sequential": {
+          "calls": 300,
+          "call_mean_ms": 3.055,
+          "call_p50_ms": 2.967,
+          "call_p95_ms": 4.169,
+          "call_p99_ms": 5.834,
+          "request_mean_ms": 36.87
+        },
+        "concurrent": {
+          "calls": 1200,
+          "call_mean_ms": 50.603,
+          "call_p50_ms": 45.552,
+          "call_p95_ms": 69.496,
+          "call_p99_ms": 290.663,
+          "request_mean_ms": 607.42,
+          "wall_sec": 3.14,
+          "calls_per_sec": 381.7
+        },
+        "flush_sec": 12.04
+      },
+      {
+        "arm": "traced",
+        "sequential": {
+          "calls": 300,
+          "call_mean_ms": 2.83,
+          "call_p50_ms": 2.74,
+          "call_p95_ms": 3.721,
+          "call_p99_ms": 4.243,
+          "request_mean_ms": 34.16
+        },
+        "concurrent": {
+          "calls": 1200,
+          "call_mean_ms": 49.532,
+          "call_p50_ms": 43.453,
+          "call_p95_ms": 75.703,
+          "call_p99_ms": 291.132,
+          "request_mean_ms": 594.55,
+          "wall_sec": 3.08,
+          "calls_per_sec": 389.0
+        },
+        "flush_sec": 14.1
+      }
+    ]
+  }
+}

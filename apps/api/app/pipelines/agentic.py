@@ -25,6 +25,7 @@ from typing_extensions import TypedDict
 from app.config import get_settings, sampling_args, tool_sampling_args
 from app.kb.retriever import hybrid_search
 from app.kb.store import KnowledgeBase
+from app.observability import lf
 from app.tools.registry import TOOL_SPECS, dispatch
 
 from .base import Emit, RunRecord, format_references, load_prompts
@@ -133,7 +134,9 @@ def _format_account(calls: list[dict]) -> str:
     return chr(10).join(lines)
 
 
-async def _structured(client: AsyncOpenAI, system: str, user: str, schema: dict, model: str) -> tuple[dict, Any]:
+async def _structured(
+    client: AsyncOpenAI, system: str, user: str, schema: dict, model: str, name: str
+) -> tuple[dict, Any]:
     """메모리·라우터·Critic이 쓰는 판정용 호출. 깊은 사고가 필요 없는 분류·추출 작업이라
     `effort="none"`을 준다. GPT-5.6 계열은 이 값이 없으면 기본값 "medium"이 켜져(공식 문서·
     실측 확인, docs/06_build_progress.md 2026-10-02) 짧은 판정에도 호출 하나당 약 2배 느려진다.
@@ -143,6 +146,7 @@ async def _structured(client: AsyncOpenAI, system: str, user: str, schema: dict,
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
         response_format={"type": "json_schema", "json_schema": schema},
         **sampling_args(model, effort="none"),
+        **lf(name),
     )
     return json.loads(response.choices[0].message.content or "{}"), response.usage
 
@@ -178,7 +182,9 @@ def build_agentic_graph(
             previous=json.dumps(prior.model_dump() if prior else {}, ensure_ascii=False),
             question=state["question"],
         )
-        payload, usage = await _structured(client, prompts["memory_system"], user, SCHEMAS["dispute"], record.model)
+        payload, usage = await _structured(
+            client, prompts["memory_system"], user, SCHEMAS["dispute"], record.model, "memory"
+        )
         fresh = DisputeTarget(**payload)
         # 논문 3.4의 '핵심 속성만 갱신': 이번 턴에 안 나온 속성은 지난 값을 지킨다
         dispute = DisputeTarget(
@@ -216,6 +222,7 @@ def build_agentic_graph(
             state["question"],
             _intent_schema(use_tools),
             record.model,
+            "router",
         )
         intent = IntentResult(**payload)
         record.add_step(
@@ -266,6 +273,7 @@ def build_agentic_graph(
                 tools=TOOL_SPECS,
                 tool_choice="auto",
                 **tool_sampling_args(record.model),
+                **lf("act"),
             )
             usage = response.usage
             tokens_in += usage.prompt_tokens
@@ -385,6 +393,7 @@ def build_agentic_graph(
                 {"role": "user", "content": user},
             ],
             **sampling_args(record.model),
+            **lf("generate"),
         )
         usage = response.usage
         record.add_step(
@@ -411,7 +420,9 @@ def build_agentic_graph(
             references=evidence,
             answer=state.get("answer", ""),
         )
-        payload, usage = await _structured(client, prompts["critic_system"], user, SCHEMAS["critic"], record.model)
+        payload, usage = await _structured(
+            client, prompts["critic_system"], user, SCHEMAS["critic"], record.model, "critic"
+        )
         critic = CriticResult(**payload)
         passed = critic.is_grounded and critic.is_relevant and critic.is_complete
 

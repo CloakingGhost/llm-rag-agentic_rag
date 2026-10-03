@@ -13,6 +13,7 @@ from openai import AsyncOpenAI
 
 from app.config import cost_usd, get_settings, sampling_args
 from app.kb.store import KnowledgeBase
+from app.observability import lf
 
 RRF_K = 60
 
@@ -79,6 +80,7 @@ async def extract_entities(client: AsyncOpenAI, question: str, model: str) -> tu
         ],
         response_format={"type": "json_schema", "json_schema": ENTITY_SCHEMA},
         **sampling_args(model, effort="none"),  # 짧은 개념 추출, 깊은 사고 불필요
+        **lf("extract_entities"),
     )
     usage = response.usage
     payload = json.loads(response.choices[0].message.content or "{}")
@@ -188,6 +190,7 @@ async def _rerank(
         ],
         response_format={"type": "json_schema", "json_schema": RERANK_SCHEMA},
         **sampling_args(model, effort="none"),  # 순위 재정렬, 깊은 사고 불필요
+        **lf("rerank"),
     )
     usage = response.usage
     order = json.loads(response.choices[0].message.content or "{}").get("ranking", [])
@@ -213,7 +216,9 @@ async def vector_retrieve(
     settings = get_settings()
     top_k = top_k or settings.native_top_k
 
-    embedding_response = await client.embeddings.create(model=settings.embed_model, input=question[:7000])
+    embedding_response = await client.embeddings.create(
+        model=settings.embed_model, input=question[:7000], **lf("embed_question")
+    )
     embedding = embedding_response.data[0].embedding
     chunks = _vector_search(kb, embedding, top_k)
     for rank, chunk in enumerate(chunks, start=1):
@@ -253,7 +258,7 @@ async def hybrid_search(
     # 임베딩과 엔티티 추출은 서로 결과에 기대지 않는다. 순차로 기다리면 두 호출 시간이
     # 그대로 더해지므로 동시에 보낸다 (IMP-21). Luna·Terra처럼 느린 모델일수록 이득이 크다.
     embedding_response, (entities, e_in, e_out) = await asyncio.gather(
-        client.embeddings.create(model=settings.embed_model, input=query[:7000]),
+        client.embeddings.create(model=settings.embed_model, input=query[:7000], **lf("embed_query")),
         extract_entities(client, contextual, model),
     )
     embed_tokens = embedding_response.usage.total_tokens

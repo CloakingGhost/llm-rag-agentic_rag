@@ -15,6 +15,7 @@ from app.api.misc import router as misc_router
 from app.config import get_settings
 from app.db.session import create_all
 from app.kb.store import get_kb
+from app.observability import init_langfuse, shutdown_langfuse
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s :: %(message)s")
 log = logging.getLogger("cdq")
@@ -39,7 +40,11 @@ async def lifespan(app: FastAPI):
     except Exception as exc:  # noqa: BLE001 - DB가 없어도 서버는 떠야 한다
         log.warning("DB 준비 실패(로그 기록이 비활성화됩니다): %s", exc)
 
+    init_langfuse()
+
     yield
+
+    shutdown_langfuse()
 
 
 app = FastAPI(title="소비자 분쟁 Q&A API", version="0.1.0", lifespan=lifespan)
