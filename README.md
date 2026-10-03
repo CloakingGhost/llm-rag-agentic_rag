@@ -258,6 +258,20 @@ uv run --directory apps/api uvicorn app.main:app --port 8100
 
 계획 전체는 [`docs/10_observability_load_test_plan.md`](docs/10_observability_load_test_plan.md) 참고.
 
+### 부하테스트 (k6)
+
+`load/k6/`에 파이프라인별 시나리오(vanilla / native / agentic)가 있다. BYOK 테스트 키 2개를 `load/k6/.env`에 두고
+(`.env.example` 참고) 아래처럼 실행한다. 모델은 GPT-5.6 Luna로 고정, 키는 VU마다 번갈아 쓴다.
+
+```bash
+bash load/k6/run.sh native                      # 1 VU x 10회 베이스라인
+K6_PROM_RW=1 bash load/k6/run.sh native ramp    # 결과를 Prometheus로 보내 Grafana "k6 부하테스트"에서 실시간으로 본다
+```
+
+배포 환경 모드(`scaleout`, `limit`), Cloud Run 서버 지표 조회(`load/gcp_metrics.py`), OpenAI 한도 점검(`load/openai_limits.py`)은
+`docs/11_deployment_test_env_plan.md` 참고.
+
+
 ---
 
 ## 9. 구조 요약

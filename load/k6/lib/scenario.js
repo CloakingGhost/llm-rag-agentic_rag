@@ -8,26 +8,78 @@ import { newClientId, newConversationId, pickKey, pickQuestion } from './common.
 const BASE_URL = __ENV.API_BASE_URL || 'http://localhost:8100';
 const MODEL = 'gpt-5.6-luna'; // 부하테스트 모델 고정 (2026-10-01 결정)
 
-const RAMP_STAGES = [
+// 요청 하나가 최대 RUN_TIMEOUT_SEC(60초)까지 걸린다. 램프다운 때 진행 중인 반복이 끊기지 않게
+// 그보다 길게 기다려 준다 (기본 30초면 agentic이 도중에 interrupted로 잘려 실패처럼 보인다)
+const GRACEFUL = '70s';
+
+// 로컬 고정 램프: 세마포어(20) 범위 안에서 동시성 확인
+const RAMP = [
   { duration: '30s', target: 1 },
   { duration: '1m', target: 3 },
   { duration: '1m', target: 6 },
   { duration: '30s', target: 0 },
 ];
 
-// K6_SCENARIO=baseline(기본) : 1 VU × 10회 — 파이프라인별 p50/p95 베이스라인
-// K6_SCENARIO=ramp           : 0→1→3→6→0 VU 램프 — 세마포어(20) 범위 내 동시성 확인
+// 배포 환경 램프는 최대 VU를 LOAD_MAX_VUS로 바꿀 수 있다 (k6 예약 변수 K6_VUS와 겹치지 않게 접두사를 다르게 둔다).
+//   단일 파이프라인 요청은 1건 = 1 run 이라 서비스 동시 상한은 3인스턴스 x 20 = 60.
+//   scaleout: 상한의 1/3 — Cloud Run 오토스케일러가 인스턴스를 늘리는 과정을 본다
+//   limit   : 상한의 1.25배(75) — 60을 넘겨서 429/503이 "설계된 상한"인지 "진짜 장애"인지 가른다
+//   agentic은 요청당 OpenAI 호출이 5~11번이라 limit을 75로 두면 키당 500 RPM에 먼저 닿을 수 있다
+//   (LOAD_MAX_VUS=40 정도로 낮추거나, 서버 CPU 한계는 native로 본다)
+const SHAPES = {
+  scaleout: { defaultMax: 20, steps: [['1m', 0.25], ['2m', 0.5], ['2m', 1], ['1m', 1], ['1m', 0]] },
+  limit: { defaultMax: 75, steps: [['1m', 0.15], ['2m', 0.4], ['2m', 1], ['2m', 1], ['1m', 0]] },
+};
+
+function stagesFor(mode) {
+  if (mode === 'ramp') return RAMP;
+  const shape = SHAPES[mode];
+  if (!shape) return null;
+  const max = Number(__ENV.LOAD_MAX_VUS || shape.defaultMax);
+  return shape.steps.map(([duration, fraction]) => ({
+    duration,
+    target: fraction === 0 ? 0 : Math.max(1, Math.round(max * fraction)),
+  }));
+}
+
+// K6_SCENARIO=baseline(기본) : 1 VU x BASELINE_ITERATIONS(기본 10)회 — 파이프라인별 p50/p95 베이스라인
+// K6_SCENARIO=ramp | scaleout | limit : 위 RAMP / SHAPES 참고
 export function buildOptions(pipelineTag, p95Ms) {
   const mode = __ENV.K6_SCENARIO || 'baseline';
-  const scenario =
-    mode === 'ramp'
-      ? { executor: 'ramping-vus', exec: 'flow', startVUs: 0, stages: RAMP_STAGES }
-      : { executor: 'shared-iterations', exec: 'flow', vus: 1, iterations: 10, maxDuration: '10m' };
+  let scenario;
+  if (mode === 'baseline') {
+    scenario = {
+      executor: 'shared-iterations',
+      exec: 'flow',
+      vus: 1,
+      iterations: Number(__ENV.BASELINE_ITERATIONS || 10),
+      maxDuration: '15m',
+    };
+  } else if (stagesFor(mode)) {
+    scenario = {
+      executor: 'ramping-vus',
+      exec: 'flow',
+      startVUs: 0,
+      stages: stagesFor(mode),
+      gracefulRampDown: GRACEFUL,
+      gracefulStop: GRACEFUL,
+    };
+  } else {
+    throw new Error(`알 수 없는 K6_SCENARIO: ${mode} (baseline | ramp | scaleout | limit)`);
+  }
+
+  // 배포 환경 단계에서는 서버가 무너지기 시작하면 스스로 멈춘다 — 부하 도구가 서버를 끝까지 밀어붙이지 않게
+  const aborting = mode === 'scaleout' || mode === 'limit';
+  const failThreshold = aborting
+    ? [{ threshold: 'rate<0.20', abortOnFail: true, delayAbortEval: '30s' }]
+    : ['rate<0.05'];
 
   return {
     scenarios: { main: scenario },
+    // 모든 지표에 붙는 태그 — Grafana에서 로컬/배포, 단계별로 거르려고 둔다
+    tags: { mode, target: __ENV.K6_TARGET || 'local' },
     thresholds: {
-      http_req_failed: ['rate<0.05'],
+      http_req_failed: failThreshold,
       [`http_req_duration{pipeline:${pipelineTag}}`]: [`p(95)<${p95Ms}`],
     },
   };

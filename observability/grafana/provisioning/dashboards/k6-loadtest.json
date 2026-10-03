@@ -1,0 +1,144 @@
+{
+  "uid": "k6-loadtest",
+  "title": "k6 부하테스트",
+  "description": "load/k6/run.sh를 K6_PROM_RW=1로 실행하면 k6가 측정한 클라이언트 쪽 지표가 여기로 들어온다. 배포 환경은 API의 /metrics를 긁을 수 없어서 이 대시보드가 실시간 창구다.",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-30m", "to": "now" },
+  "tags": ["k6", "load-test"],
+  "templating": {
+    "list": [
+      {
+        "name": "target",
+        "label": "대상(K6_TARGET)",
+        "type": "query",
+        "query": { "query": "label_values(k6_vus, target)", "refId": "target" },
+        "refresh": 2,
+        "sort": 1
+      },
+      {
+        "name": "pipeline",
+        "label": "파이프라인",
+        "type": "query",
+        "query": { "query": "label_values(k6_http_reqs_total{target=\"$target\"}, pipeline)", "refId": "pipeline" },
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "sort": 1
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "동시 가상 사용자(VU)",
+      "gridPos": { "x": 0, "y": 0, "w": 8, "h": 7 },
+      "targets": [{ "expr": "max(k6_vus{target=\"$target\"})", "legendFormat": "VUs" }],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "요청률 (상태코드별)",
+      "description": "200 외에 429/503/5xx가 보이면 서버 한계 또는 OpenAI 레이트리밋",
+      "gridPos": { "x": 8, "y": 0, "w": 8, "h": 7 },
+      "targets": [
+        {
+          "expr": "sum by (status) (rate(k6_http_reqs_total{target=\"$target\", pipeline=~\"$pipeline\"}[30s]))",
+          "legendFormat": "status {{status}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "실패율 (누적, 시작부터)",
+      "gridPos": { "x": 16, "y": 0, "w": 8, "h": 7 },
+      "targets": [
+        { "expr": "max(k6_http_req_failed_rate{target=\"$target\", pipeline=~\"$pipeline\"})", "legendFormat": "실패율" },
+        { "expr": "1 - min(k6_checks_rate{target=\"$target\"})", "legendFormat": "체크 실패율(가장 나쁜 체크)" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.05 },
+              { "color": "red", "value": 0.2 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "응답시간 p95 (파이프라인별)",
+      "description": "임계치: vanilla 25s / native 6s / agentic 35s (load/k6/scenarios)",
+      "gridPos": { "x": 0, "y": 7, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "max by (pipeline) (k6_http_req_duration_p95{target=\"$target\", pipeline=~\"$pipeline\"})",
+          "legendFormat": "{{pipeline}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "응답시간 분포 (선택한 파이프라인)",
+      "gridPos": { "x": 12, "y": 7, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "max(k6_http_req_duration_p50{target=\"$target\", pipeline=~\"$pipeline\"})", "legendFormat": "p50" },
+        { "expr": "max(k6_http_req_duration_p95{target=\"$target\", pipeline=~\"$pipeline\"})", "legendFormat": "p95" },
+        { "expr": "max(k6_http_req_duration_p99{target=\"$target\", pipeline=~\"$pipeline\"})", "legendFormat": "p99" },
+        { "expr": "max(k6_http_req_duration_max{target=\"$target\", pipeline=~\"$pipeline\"})", "legendFormat": "max" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "완료한 반복 수",
+      "gridPos": { "x": 0, "y": 15, "w": 6, "h": 5 },
+      "targets": [{ "expr": "sum(k6_iterations_total{target=\"$target\"})" }],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "처리량 (요청/분)",
+      "gridPos": { "x": 6, "y": 15, "w": 6, "h": 5 },
+      "targets": [
+        { "expr": "sum(rate(k6_http_reqs_total{target=\"$target\", pipeline=~\"$pipeline\"}[1m])) * 60" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 1 }, "overrides": [] }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "iteration 평균 시간",
+      "gridPos": { "x": 12, "y": 15, "w": 6, "h": 5 },
+      "targets": [{ "expr": "avg(k6_iteration_duration_avg{target=\"$target\"})" }],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "수신 데이터 합계",
+      "gridPos": { "x": 18, "y": 15, "w": 6, "h": 5 },
+      "targets": [{ "expr": "sum(k6_data_received_total{target=\"$target\"})" }],
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] }
+    }
+  ]
+}

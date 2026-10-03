@@ -123,6 +123,11 @@ class Settings(BaseSettings):
     max_concurrent_runs: int = 20
     run_timeout_sec: int = 60
 
+    # Prometheus /metrics. 로컬 docker-compose의 Prometheus가 스크레이프하는 용도다.
+    # Cloud Run은 인스턴스가 휘발성이라 pull 방식이 맞지 않고 allow-unauthenticated 서비스라
+    # 요청 수·핸들러 이름이 그대로 공개되므로 배포 환경에서는 끈다 (deploy 스크립트가 false를 준다)
+    metrics_enabled: bool = True
+
     # 모델 (논문 7.1절의 3개 실험군과 같은 구성)
     chat_model: str = "gpt-5.6-luna"
     embed_model: str = "text-embedding-3-large"

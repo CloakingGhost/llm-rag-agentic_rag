@@ -31,8 +31,9 @@ export function pickKey() {
   return keys[__VU % keys.length];
 }
 
+// "k6-" 접두사: 부하테스트 트래픽을 DB(clients)·LangFuse(userId)에서 가려내고 지우기 쉽게 한다
 export function newClientId() {
-  return `c${__VU}_${__ITER}_${Date.now()}`;
+  return `k6-${__VU}-${__ITER}-${Date.now()}`;
 }
 
 export function newConversationId() {

@@ -62,6 +62,7 @@ app.include_router(misc_router)
 # app/metrics.py에 따로 둔다(한 요청이 파이프라인을 최대 3개 동시에 돌려서 HTTP 단위로는 안 잡힘).
 # 기본 버킷(0.1/0.5/1초)은 챗봇 응답(수 초~수십 초)엔 너무 촘촘해서 거의 다 +Inf로 몰린다 —
 # /api/chat 지연 범위(최대 RUN_TIMEOUT_SEC=60초)에 맞춰 다시 잡는다
-_instrumentator = Instrumentator()
-_instrumentator.add(default_metric(latency_lowr_buckets=(0.5, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 120)))
-_instrumentator.instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
+if get_settings().metrics_enabled:
+    _instrumentator = Instrumentator()
+    _instrumentator.add(default_metric(latency_lowr_buckets=(0.5, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 120)))
+    _instrumentator.instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)

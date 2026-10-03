@@ -21,6 +21,12 @@ services:
   prometheus:
     image: prom/prometheus:v3.0.1
     container_name: cdq-prometheus
+    # 기본 인자 + k6 결과 수신(remote write). 배포 환경 부하테스트는 API의 /metrics를 긁을 수 없어서
+    # k6가 측정한 클라이언트 쪽 지표를 여기로 받아 Grafana에서 본다 (load/k6/run.sh의 K6_PROM_RW=1)
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-remote-write-receiver
     volumes:
       - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - cdq_prom_data:/prometheus
