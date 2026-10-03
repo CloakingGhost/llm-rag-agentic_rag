@@ -8,6 +8,7 @@
     cd apps/api
     uv run python eval/langfuse_traces/check.py                     # 최근 트레이스 10개
     uv run python eval/langfuse_traces/check.py --user lf-verify-1  # clientId로 거르기
+    uv run python eval/langfuse_traces/check.py --environment loadtest   # 배포 테스트 서비스의 트레이스만
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ K6_ENV = Path(__file__).resolve().parents[4] / "load" / "k6" / ".env"
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--user", help="clientId(= LangFuse userId)로 거른다")
+    parser.add_argument("--environment", help="LangFuse environment로 거른다 (배포 테스트 서비스는 loadtest)")
     parser.add_argument("--limit", type=int, default=10)
     args = parser.parse_args()
 
@@ -43,6 +45,8 @@ def main() -> None:
     query = {"limit": args.limit}
     if args.user:
         query["userId"] = args.user
+    if args.environment:
+        query["environment"] = args.environment
     traces = get("/api/public/traces?" + urllib.parse.urlencode(query))["data"]
     print(f"트레이스 {len(traces)}개 ({base})")
     for t in traces:
