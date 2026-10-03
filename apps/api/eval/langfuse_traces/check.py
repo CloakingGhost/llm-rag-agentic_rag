@@ -31,6 +31,7 @@ def main() -> None:
     parser.add_argument("--user", help="clientId(= LangFuse userId)로 거른다")
     parser.add_argument("--environment", help="LangFuse environment로 거른다 (배포 테스트 서비스는 loadtest)")
     parser.add_argument("--limit", type=int, default=10)
+    parser.add_argument("--count", action="store_true", help="목록 대신 환경 전체와 파이프라인별 트레이스 개수만 센다")
     args = parser.parse_args()
 
     env = dotenv_values(API_ENV)
@@ -41,6 +42,17 @@ def main() -> None:
         req = urllib.request.Request(base + path, headers={"Authorization": f"Basic {token}"})
         with urllib.request.urlopen(req, timeout=20) as resp:
             return json.load(resp)
+
+    if args.count:
+        # k6가 보낸 요청 수와 비교해 트레이스 유실을 본다 (4-6). 검증용 질문이 섞이면 그만큼 더 많다
+        def total(**extra: str) -> int:
+            base_query = {"limit": 1, **({"environment": args.environment} if args.environment else {}), **extra}
+            return get("/api/public/traces?" + urllib.parse.urlencode(base_query))["meta"]["totalItems"]
+
+        print(f"environment={args.environment or '(전체)'} 트레이스 {total()}개")
+        for tag in ("vanilla", "native", "agentic"):
+            print(f"  {tag:8s} {total(tags=tag)}개")
+        return
 
     query = {"limit": args.limit}
     if args.user:

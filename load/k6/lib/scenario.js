@@ -76,6 +76,8 @@ export function buildOptions(pipelineTag, p95Ms) {
 
   return {
     scenarios: { main: scenario },
+    // 요약에 p99까지 넣는다 (기본은 p90/p95까지만 나온다)
+    summaryTrendStats: ['avg', 'min', 'med', 'p(90)', 'p(95)', 'p(99)', 'max'],
     // 모든 지표에 붙는 태그 — Grafana에서 로컬/배포, 단계별로 거르려고 둔다
     tags: { mode, target: __ENV.K6_TARGET || 'local' },
     thresholds: {
