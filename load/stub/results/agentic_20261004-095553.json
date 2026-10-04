@@ -1,0 +1,45 @@
+{
+  "args": {
+    "pipeline": "agentic",
+    "levels": "20",
+    "duration": 420,
+    "scale": "1.0",
+    "max_runs": "20",
+    "langfuse": true
+  },
+  "levels": [
+    {
+      "pipeline": "agentic",
+      "vus": 20,
+      "duration_sec": 420,
+      "wall_sec": 456.5,
+      "iterations": 287,
+      "throughput_rps": 0.63,
+      "latency_med_s": 33.13,
+      "latency_p95_s": 38.75,
+      "latency_max_s": 41.39,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 8.5,
+      "cpu_sec_per_request": 0.1309,
+      "loop_lag_p50_ms": 2.1,
+      "loop_lag_p99_ms": 8.1,
+      "loop_lag_max_ms": 149.2,
+      "slots_avg": 18.8,
+      "slots_max": 20.0,
+      "rss_mb": 299,
+      "openai_calls_per_request": 12.3,
+      "stub_calls": {
+        "memory": 287,
+        "router": 287,
+        "embedding": 518,
+        "entities": 518,
+        "rerank": 518,
+        "generate_agentic": 694,
+        "critic": 694
+      },
+      "k6_exit": 0
+    }
+  ],
+  "stat_median_cpu_sec_per_request": 0.1309
+}

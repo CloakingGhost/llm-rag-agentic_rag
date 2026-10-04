@@ -1,0 +1,162 @@
+{
+  "args": {
+    "pipeline": "native",
+    "levels": "10,20,40,60,80,120",
+    "duration": 45,
+    "scale": "1.0",
+    "langfuse": false
+  },
+  "levels": [
+    {
+      "pipeline": "native",
+      "vus": 10,
+      "duration_sec": 45,
+      "wall_sec": 52.0,
+      "iterations": 92,
+      "throughput_rps": 1.77,
+      "latency_med_s": 4.26,
+      "latency_p95_s": 5.18,
+      "latency_max_s": 5.52,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 7.3,
+      "cpu_sec_per_request": 0.0464,
+      "loop_lag_p50_ms": 1.6,
+      "loop_lag_p99_ms": 7.5,
+      "loop_lag_max_ms": 15.3,
+      "rss_mb": 247,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 92,
+        "generate_native": 92
+      },
+      "k6_exit": 0
+    },
+    {
+      "pipeline": "native",
+      "vus": 20,
+      "duration_sec": 45,
+      "wall_sec": 50.4,
+      "iterations": 185,
+      "throughput_rps": 3.67,
+      "latency_med_s": 4.12,
+      "latency_p95_s": 5.19,
+      "latency_max_s": 6.04,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 13.2,
+      "cpu_sec_per_request": 0.0338,
+      "loop_lag_p50_ms": 1.5,
+      "loop_lag_p99_ms": 6.4,
+      "loop_lag_max_ms": 127.1,
+      "rss_mb": 254,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 185,
+        "generate_native": 185
+      },
+      "k6_exit": 0
+    },
+    {
+      "pipeline": "native",
+      "vus": 40,
+      "duration_sec": 45,
+      "wall_sec": 53.4,
+      "iterations": 272,
+      "throughput_rps": 5.1,
+      "latency_med_s": 6.09,
+      "latency_p95_s": 7.88,
+      "latency_max_s": 9.41,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 20.1,
+      "cpu_sec_per_request": 0.0356,
+      "loop_lag_p50_ms": 1.5,
+      "loop_lag_p99_ms": 10.9,
+      "loop_lag_max_ms": 14.9,
+      "rss_mb": 270,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 272,
+        "generate_native": 272
+      },
+      "k6_exit": 99
+    },
+    {
+      "pipeline": "native",
+      "vus": 60,
+      "duration_sec": 45,
+      "wall_sec": 56.6,
+      "iterations": 295,
+      "throughput_rps": 5.21,
+      "latency_med_s": 9.29,
+      "latency_p95_s": 11.22,
+      "latency_max_s": 13.55,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 21.6,
+      "cpu_sec_per_request": 0.0364,
+      "loop_lag_p50_ms": 1.5,
+      "loop_lag_p99_ms": 17.5,
+      "loop_lag_max_ms": 39.4,
+      "rss_mb": 305,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 295,
+        "generate_native": 295
+      },
+      "k6_exit": 99
+    },
+    {
+      "pipeline": "native",
+      "vus": 80,
+      "duration_sec": 45,
+      "wall_sec": 60.4,
+      "iterations": 313,
+      "throughput_rps": 5.18,
+      "latency_med_s": 12.99,
+      "latency_p95_s": 14.77,
+      "latency_max_s": 17.94,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 22.4,
+      "cpu_sec_per_request": 0.0373,
+      "loop_lag_p50_ms": 1.5,
+      "loop_lag_p99_ms": 13.1,
+      "loop_lag_max_ms": 21.6,
+      "rss_mb": 305,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 313,
+        "generate_native": 313
+      },
+      "k6_exit": 99
+    },
+    {
+      "pipeline": "native",
+      "vus": 120,
+      "duration_sec": 45,
+      "wall_sec": 68.1,
+      "iterations": 353,
+      "throughput_rps": 5.19,
+      "latency_med_s": 19.91,
+      "latency_p95_s": 21.49,
+      "latency_max_s": 24.29,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 21.5,
+      "cpu_sec_per_request": 0.0355,
+      "loop_lag_p50_ms": 2.0,
+      "loop_lag_p99_ms": 11.3,
+      "loop_lag_max_ms": 31.5,
+      "rss_mb": 333,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 353,
+        "generate_native": 353
+      },
+      "k6_exit": 99
+    }
+  ],
+  "stat_median_cpu_sec_per_request": 0.036000000000000004
+}

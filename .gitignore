@@ -45,3 +45,7 @@ agentic_ai_test/
 
 # 부하테스트
 ## 필요시 추가 작성
+
+# 스텁 부하테스트가 레벨마다 남기는 k6 요약 (집계는 load/stub/results/에 저장되므로 중복)
+load/k6/results/stub-local_*
+load/k6/results/profile_*

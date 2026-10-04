@@ -65,6 +65,15 @@ export function buildOptions(pipelineTag, p95Ms) {
       iterations: Number(__ENV.BASELINE_ITERATIONS || 10),
       maxDuration: '15m',
     };
+  } else if (mode === 'steady') {
+    // 일정한 VU를 일정 시간 유지 — 병목을 찾을 때 VU를 단계별로 바꿔 가며 쓴다 (LOAD_VUS, LOAD_DURATION)
+    scenario = {
+      executor: 'constant-vus',
+      exec: 'flow',
+      vus: Number(__ENV.LOAD_VUS || 10),
+      duration: __ENV.LOAD_DURATION || '60s',
+      gracefulStop: GRACEFUL,
+    };
   } else if (stagesFor(mode, pipelineTag)) {
     scenario = {
       executor: 'ramping-vus',
@@ -75,7 +84,7 @@ export function buildOptions(pipelineTag, p95Ms) {
       gracefulStop: GRACEFUL,
     };
   } else {
-    throw new Error(`알 수 없는 K6_SCENARIO: ${mode} (baseline | ramp | scaleout | limit)`);
+    throw new Error(`알 수 없는 K6_SCENARIO: ${mode} (baseline | ramp | scaleout | limit | steady)`);
   }
 
   // 배포 환경 단계에서는 서버가 무너지기 시작하면 스스로 멈춘다 — 부하 도구가 서버를 끝까지 밀어붙이지 않게

@@ -1,0 +1,121 @@
+{
+  "args": {
+    "pipeline": "native",
+    "levels": "20,40,80,120",
+    "duration": 40,
+    "scale": "1.0",
+    "max_runs": "60",
+    "langfuse": false
+  },
+  "levels": [
+    {
+      "pipeline": "native",
+      "vus": 20,
+      "duration_sec": 40,
+      "wall_sec": 44.6,
+      "iterations": 162,
+      "throughput_rps": 3.63,
+      "latency_med_s": 4.1,
+      "latency_p95_s": 5.27,
+      "latency_max_s": 5.86,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 13.0,
+      "cpu_sec_per_request": 0.0352,
+      "loop_lag_p50_ms": 1.5,
+      "loop_lag_p99_ms": 5.6,
+      "loop_lag_max_ms": 8.0,
+      "slots_avg": 13.6,
+      "slots_max": 18.0,
+      "rss_mb": 254,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 162,
+        "generate_native": 162
+      },
+      "k6_exit": 0
+    },
+    {
+      "pipeline": "native",
+      "vus": 40,
+      "duration_sec": 40,
+      "wall_sec": 45.7,
+      "iterations": 322,
+      "throughput_rps": 7.04,
+      "latency_med_s": 4.23,
+      "latency_p95_s": 5.43,
+      "latency_max_s": 6.41,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 27.5,
+      "cpu_sec_per_request": 0.0358,
+      "loop_lag_p50_ms": 1.4,
+      "loop_lag_p99_ms": 15.5,
+      "loop_lag_max_ms": 25.9,
+      "slots_avg": 27.1,
+      "slots_max": 39.0,
+      "rss_mb": 279,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 322,
+        "generate_native": 322
+      },
+      "k6_exit": 0
+    },
+    {
+      "pipeline": "native",
+      "vus": 80,
+      "duration_sec": 40,
+      "wall_sec": 46.0,
+      "iterations": 631,
+      "throughput_rps": 13.7,
+      "latency_med_s": 4.29,
+      "latency_p95_s": 5.92,
+      "latency_max_s": 9.54,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 50.4,
+      "cpu_sec_per_request": 0.0318,
+      "loop_lag_p50_ms": 1.5,
+      "loop_lag_p99_ms": 29.9,
+      "loop_lag_max_ms": 227.6,
+      "slots_avg": 52.2,
+      "slots_max": 60.0,
+      "rss_mb": 322,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 631,
+        "generate_native": 631
+      },
+      "k6_exit": 0
+    },
+    {
+      "pipeline": "native",
+      "vus": 120,
+      "duration_sec": 40,
+      "wall_sec": 48.0,
+      "iterations": 723,
+      "throughput_rps": 15.07,
+      "latency_med_s": 6.02,
+      "latency_p95_s": 8.56,
+      "latency_max_s": 10.91,
+      "failed_pct": 0,
+      "checks_pct": 100.0,
+      "app_cpu_pct": 54.5,
+      "cpu_sec_per_request": 0.0311,
+      "loop_lag_p50_ms": 1.6,
+      "loop_lag_p99_ms": 19.9,
+      "loop_lag_max_ms": 308.5,
+      "slots_avg": 60.0,
+      "slots_max": 60.0,
+      "rss_mb": 347,
+      "openai_calls_per_request": 2.0,
+      "stub_calls": {
+        "embedding": 723,
+        "generate_native": 723
+      },
+      "k6_exit": 99
+    }
+  ],
+  "stat_median_cpu_sec_per_request": 0.0335
+}

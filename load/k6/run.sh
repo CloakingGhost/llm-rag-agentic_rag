@@ -4,6 +4,7 @@
 #   baseline (기본) : 1 VU x 10회 (BASELINE_ITERATIONS로 횟수 변경) — 파이프라인별 p50/p95 베이스라인
 #   ramp            : 0->1->3->6->0 VU — 로컬 세마포어(20) 범위 내 동시성 확인
 #   scaleout        : 최대 20 VU(LOAD_MAX_VUS), 약 7분 — 배포 환경에서 인스턴스 확장 관찰
+#   steady          : LOAD_VUS명을 LOAD_DURATION 동안 일정하게 유지 — 병목 탐색용 단계 부하
 #   limit           : 약 8분 — 한계 테스트. 최대 VU는 파이프라인별 기본(vanilla 75 / native 35 / agentic 40)이고
 #                     LOAD_MAX_VUS로 바꾼다. native·agentic은 서버보다 OpenAI 토큰 한도(TPM)가 먼저 막혀서 낮게 잡았다
 #                     (실패율 20% 또는 run_done 누락 20%를 넘으면 k6가 스스로 멈춘다)
@@ -16,6 +17,8 @@
 #   K6_TARGET     결과에 붙는 태그. 기본 local. 배포 환경은 loadtest 처럼 주면 Grafana에서 가를 수 있다
 #   K6_PROM_RW    1이면 결과를 로컬 Prometheus로 실시간 전송 -> Grafana "k6 부하테스트" 대시보드
 #                 (docker compose의 prometheus가 떠 있어야 한다)
+#   K6_STUB       1이면 진짜 OpenAI 키 대신 더미 키를 쓴다 (스텁을 보는 서버 전용, 과금 없음)
+#   LOAD_VUS / LOAD_DURATION  steady 모드의 VU 수와 유지 시간 (기본 10 / 60s)
 #   K6_NO_WARMUP  1이면 시작 전 /api/health 워밍업을 건너뛴다 (콜드스타트까지 재고 싶을 때)
 #   ALLOW_ANY_TARGET  1이면 scaleout/limit를 localhost·loadtest 이외의 주소에도 허용한다 (운영 서비스를 때리는 길이다)
 #
@@ -40,6 +43,11 @@ set +a
 
 API_BASE_URL="${PRESET_API_BASE_URL:-${API_BASE_URL}}"
 export API_BASE_URL
+# K6_STUB=1: 대상 서버가 가짜 OpenAI(load/stub/llm_stub.py)를 보고 있을 때. 진짜 키를 쓰지 않으므로 과금이 없다
+if [[ "${K6_STUB:-0}" == "1" ]]; then
+  K6_OPENAI_KEY_1="sk-stub"
+  K6_OPENAI_KEY_2="sk-stub"
+fi
 export K6_SCENARIO
 export K6_TARGET="${K6_TARGET:-local}"
 
