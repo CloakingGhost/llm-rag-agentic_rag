@@ -4,8 +4,9 @@
 #   baseline (기본) : 1 VU x 10회 (BASELINE_ITERATIONS로 횟수 변경) — 파이프라인별 p50/p95 베이스라인
 #   ramp            : 0->1->3->6->0 VU — 로컬 세마포어(20) 범위 내 동시성 확인
 #   scaleout        : 최대 20 VU(LOAD_MAX_VUS), 약 7분 — 배포 환경에서 인스턴스 확장 관찰
-#   limit           : 최대 75 VU(LOAD_MAX_VUS), 약 8분 — 서비스 동시 상한 60을 넘겨 보는 한계 테스트
-#                     (실패율 20%를 넘으면 k6가 스스로 멈춘다)
+#   limit           : 약 8분 — 한계 테스트. 최대 VU는 파이프라인별 기본(vanilla 75 / native 35 / agentic 40)이고
+#                     LOAD_MAX_VUS로 바꾼다. native·agentic은 서버보다 OpenAI 토큰 한도(TPM)가 먼저 막혀서 낮게 잡았다
+#                     (실패율 20% 또는 run_done 누락 20%를 넘으면 k6가 스스로 멈춘다)
 #
 # .env(K6_OPENAI_KEY_1/2, API_BASE_URL)를 읽어 k6에 그대로 넘긴다.
 #

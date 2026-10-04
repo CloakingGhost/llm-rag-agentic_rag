@@ -151,9 +151,13 @@ def main() -> None:
         ("콜드스타트 소요 (ms)", "run.googleapis.com/container/startup_latencies", 1.0, "{:8.0f}"),
     ]
     print("\n분포형 지표 — 분당 값 중 구간 최댓값 (p50 / p99)")
+    p50_by_metric: dict[str, dict[str, float]] = {}
+    p99_by_metric: dict[str, dict[str, float]] = {}
     for label, metric, scale, fmt in rows:
         p50 = percentile_series(token, project, args.service, metric, start, end, 50)
         p99 = percentile_series(token, project, args.service, metric, start, end, 99)
+        p50_by_metric[metric] = p50
+        p99_by_metric[metric] = p99
         if not p99:
             print(f"  {label:26s} (데이터 없음)")
             continue
@@ -177,9 +181,33 @@ def main() -> None:
     started = sum(int(p["value"].get("distributionValue", {}).get("count", 0)) for s in cold for p in s["points"])
     print(f"\n새로 뜬 인스턴스(콜드스타트) {started}회")
 
-    print("\n분 단위 인스턴스 수 추이 (UTC)")
-    for ts, n in total.items():
-        print(f"  {ts[11:19]}  {'#' * int(n)} {n:.0f}")
+    # 분 단위 타임라인: 같은 시각 기준으로 인스턴스 수·요청·오류·CPU·동시성을 한 표에 둔다.
+    # 스케일아웃을 읽는 핵심 표다 — 부하가 늘 때 인스턴스가 언제 늘고 그때 CPU·동시성이 어땠는지 본다
+    by_code = {s["metric"]["labels"].get("response_code", "?"): per_minute([s]) for s in reqs}
+    minutes = sorted(set(total) | {ts for m in by_code.values() for ts in m})
+    cpu = p99_by_metric["run.googleapis.com/container/cpu/utilizations"]
+    mem = p99_by_metric["run.googleapis.com/container/memory/utilizations"]
+    conc = p99_by_metric["run.googleapis.com/container/max_request_concurrencies"]
+    lat50 = p50_by_metric["run.googleapis.com/request_latencies"]
+    lat99 = p99_by_metric["run.googleapis.com/request_latencies"]
+    print("\n분 단위 타임라인 (UTC) — CPU·메모리·동시 요청은 인스턴스별 분포의 p99")
+    head = f"  {'시각':8s} {'인스턴스':>6s} {'요청':>5s} {'429':>4s} {'5xx':>4s} {'기타4xx':>6s}"
+    print(head + f" {'CPU':>5s} {'메모리':>5s} {'동시요청':>7s} {'지연p50':>7s} {'지연p99':>7s}")
+
+    def cell(series: dict[str, float], ts: str, scale: float, unit: str, width: int) -> str:
+        # 그 분에 값이 없으면 0이 아니라 '-' — 0%/0.0s로 찍으면 "측정값이 0"으로 오해한다
+        return f"{series[ts] * scale:>{width}.1f}{unit}" if ts in series else f"{'-':>{width}s}{' ' * len(unit)}"
+
+    for ts in minutes:
+        n_req = sum(m.get(ts, 0) for m in by_code.values())
+        n_429 = by_code.get("429", {}).get(ts, 0)
+        n_5xx = sum(m.get(ts, 0) for c, m in by_code.items() if c.startswith("5"))
+        n_4xx = sum(m.get(ts, 0) for c, m in by_code.items() if c.startswith("4") and c != "429")
+        print(
+            f"  {ts[11:19]} {total.get(ts, 0):>6.0f} {n_req:>5.0f} {n_429:>4.0f} {n_5xx:>4.0f} {n_4xx:>6.0f}"
+            f" {cell(cpu, ts, 100, '%', 4)} {cell(mem, ts, 100, '%', 4)} {cell(conc, ts, 1, '', 7)}"
+            f" {cell(lat50, ts, 0.001, 's', 6)} {cell(lat99, ts, 0.001, 's', 6)}"
+        )
 
 
 if __name__ == "__main__":
